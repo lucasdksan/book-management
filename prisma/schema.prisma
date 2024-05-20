@@ -1,0 +1,102 @@
+datasource db {
+    provider = "mysql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Books {
+    id               Int            @id @default(autoincrement())
+    title            String
+    description      String
+    price            Int
+    publication_date DateTime
+    author           Authors        @relation(fields: [author_id], references: [id])
+    author_id        Int
+    categorie        Categories?    @relation(fields: [categorie_id], references: [id])
+    categorie_id     Int?
+    reservations     Reservations[]
+    waitlist         Waitlist[]
+    created_at       DateTime       @default(now())
+    update_at        DateTime       @updatedAt
+
+    @@map("books")
+}
+
+model Authors {
+    id         Int      @id @default(autoincrement())
+    name       String
+    biography  String
+    books      Books[]
+    created_at DateTime @default(now())
+    update_at  DateTime @updatedAt
+
+    @@map("authors")
+}
+
+model Categories {
+    id         Int      @id @default(autoincrement())
+    name       String
+    books      Books[]
+    created_at DateTime @default(now())
+    update_at  DateTime @updatedAt
+
+    @@map("categories")
+}
+
+model Users {
+    id               Int            @id @default(autoincrement())
+    name             String
+    email            String         @unique
+    password         String
+    role             Role           @default(USER)
+    penalty_end_date DateTime?
+    reservations     Reservations[]
+    waitlist         Waitlist[]
+    created_at       DateTime       @default(now())
+    update_at        DateTime       @updatedAt
+
+    @@map("users")
+}
+
+model Reservations {
+    id               Int               @id @default(autoincrement())
+    book             Books             @relation(fields: [book_id], references: [id])
+    book_id          Int
+    user             Users             @relation(fields: [user_id], references: [id])
+    user_id          Int
+    reservation_date DateTime
+    due_date         DateTime
+    status           ReservationStatus
+    created_at       DateTime          @default(now())
+    update_at        DateTime          @updatedAt
+
+    @@map("reservations")
+}
+
+model Waitlist {
+    id         Int      @id @default(autoincrement())
+    book       Books    @relation(fields: [book_id], references: [id])
+    book_id    Int
+    user       Users    @relation(fields: [user_id], references: [id])
+    user_id    Int
+    position   Int
+    entry_date DateTime
+    created_at DateTime @default(now())
+    update_at  DateTime @updatedAt
+
+    @@map("waitlist")
+}
+
+enum ReservationStatus {
+    RESERVED
+    RETURNED
+    LATE
+}
+
+enum Role {
+    ADMIN
+    USER
+}
