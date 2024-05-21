@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 const schema = z.object({
+    PORT: z.string(),
     DATABASE_URL: z.string(),
     JWT_SECRET: z.string(),
     MAILER_EMAIL: z.string(),

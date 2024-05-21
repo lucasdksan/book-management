@@ -39,6 +39,10 @@ export class AuthorService {
     }
 
     async delete(id: number){
+        await this.prisma.books.deleteMany({
+            where: { author_id: id }
+        });
+    
         await this.prisma.authors.delete({
             where: { id }
         });
