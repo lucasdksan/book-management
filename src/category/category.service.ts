@@ -9,7 +9,7 @@ export class CategoryService {
     constructor(private readonly prisma: PrismaService){}
     
     async create(data: CreateCategoryDTO){
-        return this.prisma.categories.create({
+        return await this.prisma.categories.create({
             data
         });
     }
@@ -19,7 +19,7 @@ export class CategoryService {
     }
 
     async show(id: number) {
-        return this.prisma.categories.findUnique({
+        return await this.prisma.categories.findUnique({
             where: { id }
         });
     }

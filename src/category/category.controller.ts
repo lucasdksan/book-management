@@ -6,25 +6,25 @@ import { UpdatePatchCategoryDTO } from "./dto/update-patch-category.dto";
 
 @Controller("/categories")
 export class CategoryController {
-    constructor(private readonly categoryService: CategoryService){}
+    constructor(private readonly categoryService: CategoryService) { }
 
     @Post()
-    async create(@Body() body:CreateCategoryDTO){
+    async create(@Body() body: CreateCategoryDTO) {
         return this.categoryService.create(body);
     }
 
     @Get()
-    async list(){
+    async list() {
         return this.categoryService.list();
     }
 
     @Get(":id")
-    async read(@Param("id") id){
+    async read(@Param("id") id) {
         return this.categoryService.show(Number(id));
     }
 
     @Put(":id")
-    async update(@Body() body: UpdatePutCategoryDTO, @Param("id") id){
+    async update(@Body() body: UpdatePutCategoryDTO, @Param("id") id) {
         return this.categoryService.update(body, Number(id))
     }
 
