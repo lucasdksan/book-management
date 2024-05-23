@@ -48,6 +48,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **password:** Senha do usuário.
 - **role:** Papel do usuário (ADMIN ou USER).
 - **penalty_end_date:** Data de fim da penalidade.
+- **birth_at:** Data do aniversário.
 - **created_at:** Data de criação do registro.
 - **update_at:** Data da última atualização do registro.
 </details>

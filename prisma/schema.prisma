@@ -53,6 +53,7 @@ model Users {
     password         String
     role             Role           @default(USER)
     penalty_end_date DateTime?
+    birth_at         DateTime?
     reservations     Reservations[]
     waitlist         Waitlist[]
     created_at       DateTime       @default(now())
