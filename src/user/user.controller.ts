@@ -5,6 +5,6 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 export class UserController {
     @Post()
     async create(@Body() body: CreateUserDTO){
-
+        
     }
 }
