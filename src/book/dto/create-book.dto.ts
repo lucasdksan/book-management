@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsString } from "class-validator";
+import { IsDateString, IsNumber, IsString } from "class-validator";
 
 export class CreateBookDTO {
     @IsString()
@@ -10,8 +10,8 @@ export class CreateBookDTO {
     @IsNumber()
     price: number;
 
-    @IsDate()
-    publication_date: Date;
+    @IsDateString()
+    publication_date: string;
 
     @IsNumber()
     author_id: number;
