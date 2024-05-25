@@ -10,12 +10,22 @@ export class UserService {
     async create(data: CreateUserDTO){
         const salt = await bcrypt.genSalt();
         const { password, ...user } = data;
-        const new_password = await bcrypt.hash(password, salt);
+        const newPassword = await bcrypt.hash(password, salt);
 
-        return await this.prisma.users.create({
+        await this.prisma.users.create({
             data: {
-                password: new_password,
+                password: newPassword,
                 ...user
+            }
+        });
+
+        return true;
+    }
+
+    async list(){
+        return await this.prisma.users.findMany({
+            where: {
+                role: "USER"
             }
         });
     }
