@@ -25,27 +25,37 @@ export class AuthorService {
     }
 
     async update(data: UpdatePutAuthorDTO, id: number){
-        return await this.prisma.authors.update({
+        const updateAuthor = await this.prisma.authors.update({
             where: { id },
             data
         });
+
+        if(!updateAuthor) throw new Error("");
+
+        return true;
     }
 
     async updatePatch(data: UpdatePatchAuthorDTO, id: number) {
-        return await this.prisma.authors.update({
+        const updateAuthor = await this.prisma.authors.update({
             where: { id },
             data
         });
+
+        if(!updateAuthor) throw new Error("");
+
+        return true;
     }
 
     async delete(id: number){
-        await this.prisma.books.deleteMany({
+        const deleteBooks = await this.prisma.books.deleteMany({
             where: { author_id: id }
         });
     
-        await this.prisma.authors.delete({
+        const deleteAuthor = await this.prisma.authors.delete({
             where: { id }
         });
+
+        if(!deleteAuthor || !deleteBooks) throw new Error("");
 
         return true;
     }

@@ -25,23 +25,33 @@ export class CategoryService {
     }
 
     async update(data: UpdatePutCategoryDTO, id: number){
-        return await this.prisma.categories.update({
+        const updateCategory = await this.prisma.categories.update({
             where: { id },
             data
         });
+
+        if(!updateCategory) throw new Error("");
+
+        return true;
     }
 
     async updatePatch(data: UpdatePatchCategoryDTO, id: number) {
-        return await this.prisma.categories.update({
+        const updateCategory = await this.prisma.categories.update({
             where: { id },
             data
         });
+
+        if(!updateCategory) throw new Error("");
+
+        return true;
     }
 
     async delete(id: number){
-        await this.prisma.categories.delete({
+        const deleteCategory = await this.prisma.categories.delete({
             where: { id }
         });
+
+        if(!deleteCategory) throw new Error("");
 
         return true;
     }
