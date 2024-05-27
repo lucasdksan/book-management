@@ -4,3 +4,11 @@ class BaseError extends Error {
         this.name = name;
     }
 }
+
+export class ExistUserError extends BaseError {
+    constructor({ name }: { name: string }){
+        super({
+            name
+        });
+    }
+}

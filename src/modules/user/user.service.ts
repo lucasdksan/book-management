@@ -6,6 +6,7 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 import { ViewUserDTO } from "./dto/view-user.dto";
 import { Role } from "../../common/enums/role.enums";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
+import { ExistUserError } from "../../common/errors";
 
 @Injectable()
 export class UserService {
@@ -19,10 +20,30 @@ export class UserService {
         }
     }
 
+    private async existUser(email: string) {
+        const user = await this.prisma.users.findUnique({
+            where: {
+                email
+            }
+        });
+
+        if(!user) return false;
+
+        return true;
+    }
+
     async create(data: CreateUserDTO) {
         const salt = await bcrypt.genSalt();
         const { password, ...user } = data;
         const newPassword = await bcrypt.hash(password, salt);
+
+        const existUser = await this.existUser(user.email);
+
+        if(existUser) {
+            const existUserError = new ExistUserError({ name: "User exist!" });
+
+            throw existUserError;
+        }
 
         await this.prisma.users.create({
             data: {
