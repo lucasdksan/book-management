@@ -7,6 +7,7 @@ import { ViewUserDTO } from "./dto/view-user.dto";
 import { Role } from "../../common/enums/role.enums";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { ExistUserError } from "../../common/errors";
+import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 
 @Injectable()
 export class UserService {
@@ -106,6 +107,17 @@ export class UserService {
     }
 
     async update(data: UpdatePutUserDTO ,id: number) {
+        const updateUser = await this.prisma.users.update({
+            where: { id },
+            data
+        });
+
+        if(!updateUser) throw new Error("");
+
+        return true;
+    }
+
+    async updatePatch(data: UpdatePatchUserDTO, id: number) {
         const updateUser = await this.prisma.users.update({
             where: { id },
             data
