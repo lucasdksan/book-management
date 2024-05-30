@@ -69,6 +69,7 @@ export class UserService {
 
         const viewUsersDTO = users.map((user)=> {
             let viewUserDTO: ViewUserDTO = {
+                id: user.id,
                 email: user.email,
                 name: user.name,
                 createdAt: user.created_at.toISOString(),
@@ -95,6 +96,7 @@ export class UserService {
         }
 
         const viewUserDTO: ViewUserDTO = {
+            id: user.id,
             email: user.email,
             name: user.name,
             createdAt: user.created_at.toISOString(),

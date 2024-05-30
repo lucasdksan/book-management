@@ -17,5 +17,8 @@ export class CreateBookDTO {
     author_id: number;
 
     @IsNumber()
+    quantity: number;
+
+    @IsNumber()
     categorie_id: number;
 }

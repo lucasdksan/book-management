@@ -6,12 +6,13 @@ Projeto para aprimorar os conhecimentos em NestJS. Este projeto consiste em dese
 
 O CRUD deste sistema contém as seguintes entidades:
 
-<details open="open">
+<details close="close">
 <summary>Livros (Books)</summary>
 
 - **id:** Identificador único do livro.
 - **title:** Título do livro.
 - **description:** Descrição do livro.
+-**quantity:** Quantidade do livro.
 - **price:** Preço do livro.
 - **publication_date:** Data de publicação do livro.
 - **author_id:** Identificador do autor do livro.
@@ -20,7 +21,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **update_at:** Data da última atualização do registro.
 </details>
 
-<details open="open">
+<details close="close">
 <summary>Autores (Authors)</summary>
 
 - **id:** Identificador único do autor.
@@ -30,7 +31,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **update_at:** Data da última atualização do registro.
 </details>
 
-<details open="open">
+<details close="close">
 <summary>Categorias (Categories)</summary>
 
 - **id:** Identificador único da categoria.
@@ -39,7 +40,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **update_at:** Data da última atualização do registro.
 </details>
 
-<details open="open">
+<details close="close">
 <summary>Usuários (Users)</summary>
 
 - **id:** Identificador único do usuário.
@@ -54,7 +55,7 @@ O CRUD deste sistema contém as seguintes entidades:
 </details>
 
 
-<details open="open">
+<details close="close">
 <summary>Reservas (Reservations)</summary>
 
 - **id:** Identificador único da reserva.
@@ -67,7 +68,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **update_at:** Data da última atualização do registro.
 </details>
 
-<details open="open">
+<details close="close">
 <summary>Lista de espera (Waitlist)</summary>
 
 - **id:** Identificador único da lista de espera.

@@ -14,6 +14,7 @@ model Books {
     price            Float
     publication_date DateTime
     author           Authors        @relation(fields: [author_id], references: [id])
+    quantity         Int            @default(0)
     author_id        Int
     categorie        Categories?    @relation(fields: [categorie_id], references: [id])
     categorie_id     Int?
@@ -70,7 +71,7 @@ model Reservations {
     user_id          Int
     reservation_date DateTime
     due_date         DateTime
-    status           ReservationStatus
+    status           ReservationStatus @default(RESERVED)
     created_at       DateTime          @default(now())
     update_at        DateTime          @updatedAt
 
