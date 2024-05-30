@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, Put } from "@nestjs/common";
 import { CategoryService } from "./category.service";
 import { CreateCategoryDTO } from "./dto/create-category.dto";
 import { UpdatePutCategoryDTO } from "./dto/update-put-category.dto";
 import { UpdatePatchCategoryDTO } from "./dto/update-patch-category.dto";
+import { ParamId } from "../../common/decorators/param-id.decorator";
 
 @Controller("/categories")
 export class CategoryController {
@@ -19,22 +20,22 @@ export class CategoryController {
     }
 
     @Get(":id")
-    async read(@Param("id") id) {
-        return this.categoryService.show(Number(id));
+    async read(@ParamId() id:number) {
+        return this.categoryService.show(id);
     }
 
     @Put(":id")
-    async update(@Body() body: UpdatePutCategoryDTO, @Param("id") id) {
-        return this.categoryService.update(body, Number(id))
+    async update(@Body() body: UpdatePutCategoryDTO, @ParamId() id:number) {
+        return this.categoryService.update(body, id);
     }
 
     @Patch(":id")
-    async updatePartial(@Body() body: UpdatePatchCategoryDTO, @Param("id") id) {
-        return this.categoryService.updatePatch(body, Number(id));
+    async updatePartial(@Body() body: UpdatePatchCategoryDTO, @ParamId() id:number) {
+        return this.categoryService.updatePatch(body, id);
     }
 
     @Delete(":id")
-    async delete(@Param("id") id) {
-        return this.categoryService.delete(Number(id));
+    async delete(@ParamId() id:number) {
+        return this.categoryService.delete(id);
     }
 }

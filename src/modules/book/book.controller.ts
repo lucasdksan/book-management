@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Patch, Post, Put } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { CreateBookDTO } from "./dto/create-book.dto";
 import { UpdatePutBookDTO } from "./dto/update-put-book.dto";
+import { ParamId } from "../../common/decorators/param-id.decorator";
 
 @Controller("books")
 export class BookController {
@@ -18,22 +19,22 @@ export class BookController {
     }
 
     @Get(":id")
-    async read(@Param("id") id){
-        return this.bookService.show(Number(id));
+    async read(@ParamId() id:number){
+        return this.bookService.show(id);
     }
 
     @Put(":id")
-    async update(@Body() body: UpdatePutBookDTO, @Param("id") id){
-        return this.bookService.update(body, Number(id));
+    async update(@Body() body: UpdatePutBookDTO, @ParamId() id:number){
+        return this.bookService.update(body, id);
     }
 
     @Patch(":id")
-    async updatePartial(@Body() body: UpdatePutBookDTO, @Param("id") id) {
-        return this.bookService.updatePatch(body, Number(id));
+    async updatePartial(@Body() body: UpdatePutBookDTO, @ParamId() id:number) {
+        return this.bookService.updatePatch(body, id);
     }
 
     @Delete(":id")
-    async delete(@Param("id") id) {
-        return this.bookService.delete(Number(id))
+    async delete(@ParamId() id:number) {
+        return this.bookService.delete(id);
     }
 }
