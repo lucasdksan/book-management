@@ -28,7 +28,7 @@ export class ReservationController {
     }
 
     @Get("/returned/:id")
-    async returnedBook(@ParamId() id: number, @Query("user-id") userId: string){
+    async returnedBook(@ParamId() id: number, @Query("userId") userId: string){
         return this.reservationService.returnedBook(id, Number(userId));
     }
 }
