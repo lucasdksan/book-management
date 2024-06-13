@@ -10,9 +10,10 @@ O CRUD deste sistema contém as seguintes entidades:
 <summary>Livros (Books)</summary>
 
 - **id:** Identificador único do livro.
+- **quantity:** Quantidade deste livro.
 - **title:** Título do livro.
 - **description:** Descrição do livro.
--**quantity:** Quantidade do livro.
+- **quantity:** Quantidade do livro.
 - **price:** Preço do livro.
 - **publication_date:** Data de publicação do livro.
 - **author_id:** Identificador do autor do livro.

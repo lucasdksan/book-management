@@ -9,6 +9,16 @@ import { ReservationStatus } from "../../common/enums/reservationStatus.enums";
 export class ReservationService {
     constructor(private readonly prisma: PrismaService) { }
 
+    private async getQuantityBook(bookId: number){
+        const quantity = await this.prisma.books.findUnique({
+            where: {
+                id: bookId
+            }
+        });
+
+        return quantity.quantity;
+    }
+
     private convertPrismaStatusToStatus(prismaStatus: PrismaStatus): ReservationStatus {
         if(prismaStatus === "RESERVED") {
             return ReservationStatus.Reserved;
@@ -27,15 +37,29 @@ export class ReservationService {
         
         const dueDate = nowDate.toJSON();
         const currentDate = new Date().toJSON();
+
+        if(!book_id || !user_id) throw new Error("");
+
+        const quantity = await this.getQuantityBook(book_id);
         const quantityBooks = await this.prisma.reservations.findMany({
             where: {
                 user_id
             }
         });
 
-        if(quantityBooks.length === 3) throw new Error("");
+        const quantityBook = await this.prisma.reservations.findMany({
+            where: {
+                book_id,
+                AND: [
+                    {
+                        status: "RESERVED"
+                    }
+                ]
+            }
+        });
 
-        if(!book_id || !user_id) throw new Error("");
+        if(quantityBooks.length === 3) throw new Error("");
+        if(quantity === quantityBook.length) throw new Error("");
 
         return await this.prisma.reservations.create({
             data: {
