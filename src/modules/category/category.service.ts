@@ -9,19 +9,31 @@ export class CategoryService {
     constructor(private readonly prisma: PrismaService){}
     
     async create(data: CreateCategoryDTO){
-        return await this.prisma.categories.create({
+        const categoryCreate = await this.prisma.categories.create({
             data
         });
+
+        if(!categoryCreate) return { success: false, message: "Erro ao criar categoria!" };
+
+        return { success: true, message: "Categoria criada com sucesso!" }
     }
 
     async list(){
-        return await this.prisma.categories.findMany();
+        const categoryList = await this.prisma.categories.findMany();
+
+        if(!categoryList) return { success: false, message: "Erro ao listar as categorias" };
+
+        return categoryList;
     }
 
     async show(id: number) {
-        return await this.prisma.categories.findUnique({
+        const category = await this.prisma.categories.findUnique({
             where: { id }
         });
+
+        if(!category) return { success: false, message: "Erro ao buscar a categoria" };
+
+        return category;
     }
 
     async update(data: UpdatePutCategoryDTO, id: number){
@@ -30,9 +42,9 @@ export class CategoryService {
             data
         });
 
-        if(!updateCategory) throw new Error("");
+        if(!updateCategory) return { success: false, message: "Erro ao atualizar a categoria!" };
 
-        return true;
+        return { success: true, message: "Categoria atualizada com sucesso!" }
     }
 
     async updatePatch(data: UpdatePatchCategoryDTO, id: number) {
@@ -41,9 +53,9 @@ export class CategoryService {
             data
         });
 
-        if(!updateCategory) throw new Error("");
+        if(!updateCategory) return { success: false, message: "Erro ao atualizar a categoria!" };
 
-        return true;
+        return { success: true, message: "Categoria atualizada com sucesso!" }
     }
 
     async delete(id: number){
@@ -51,8 +63,8 @@ export class CategoryService {
             where: { id }
         });
 
-        if(!deleteCategory) throw new Error("");
+        if(!deleteCategory) return { success: false, message: "Erro ao deletar a categoria!" };
 
-        return true;
+        return { success: true, message: "Categoria deletada com sucesso!" }
     }
 }

@@ -6,7 +6,6 @@ import { CreateUserDTO } from "./dto/create-user.dto";
 import { ViewUserDTO } from "./dto/view-user.dto";
 import { Role } from "../../common/enums/role.enums";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
-import { ExistUserError } from "../../common/errors";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 
 @Injectable()
@@ -40,20 +39,18 @@ export class UserService {
 
         const existUser = await this.existUser(user.email);
 
-        if(existUser) {
-            const existUserError = new ExistUserError({ name: "User exist!" });
+        if(existUser) return { success: false, message: "Usuário já registrado!" }
 
-            throw existUserError;
-        }
-
-        await this.prisma.users.create({
+        const userCreate = await this.prisma.users.create({
             data: {
                 password: newPassword,
                 ...user
             }
         });
 
-        return true;
+        if(!userCreate) return { success: false, message: "Erro ao registrar o usuário!" };
+        
+        return { success: true, message: "Usuário registrado" };
     }
 
     async list() {
@@ -63,9 +60,7 @@ export class UserService {
             }
         });
 
-        if (!users) {
-            throw new Error("");
-        }
+        if (!users) return { success: false, message: "Erro ao listar os usuários!" };
 
         const viewUsersDTO = users.map((user)=> {
             let viewUserDTO: ViewUserDTO = {
@@ -91,9 +86,7 @@ export class UserService {
             }
         });
 
-        if (!user) {
-            throw new Error("");
-        }
+        if (!user) return { success: false, message: "Erro ao buscar o usuário!" };
 
         const viewUserDTO: ViewUserDTO = {
             id: user.id,
@@ -114,9 +107,9 @@ export class UserService {
             data
         });
 
-        if(!updateUser) throw new Error("");
-
-        return true;
+        if(!updateUser) return { success: false, message: "Erro ao atualizar o usuário!" };
+        
+        return { success: true, message: "Usuário atualizado!" };
     }
 
     async updatePatch(data: UpdatePatchUserDTO, id: number) {
@@ -125,9 +118,9 @@ export class UserService {
             data
         });
 
-        if(!updateUser) throw new Error("");
-
-        return true;
+        if(!updateUser) return { success: false, message: "Erro ao atualizar o usuário!" };
+        
+        return { success: true, message: "Usuário atualizado!" };
     }
 
     async delete(id: number) {
@@ -137,8 +130,8 @@ export class UserService {
             }
         });
 
-        if(!deleteUser) throw new Error("");
-
-        return true;
+        if(!deleteUser) return { success: false, message: "Erro ao deletar o usuário!" };
+        
+        return { success: true, message: "Usuário deletado!" };
     }
 }

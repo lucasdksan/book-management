@@ -11,9 +11,7 @@ export class ReservationService {
 
     private async getQuantityBook(bookId: number){
         const quantity = await this.prisma.books.findUnique({
-            where: {
-                id: bookId
-            }
+            where: { id: bookId }
         });
 
         return quantity.quantity;
@@ -42,33 +40,33 @@ export class ReservationService {
 
         const quantity = await this.getQuantityBook(book_id);
         const quantityBooks = await this.prisma.reservations.findMany({
-            where: {
-                user_id
-            }
+            where: { user_id }
         });
 
         const quantityBook = await this.prisma.reservations.findMany({
             where: {
                 book_id,
                 AND: [
-                    {
-                        status: "RESERVED"
-                    }
+                    { status: "RESERVED" }
                 ]
             }
         });
 
-        if(quantityBooks.length === 3) throw new Error("");
-        if(quantity === quantityBook.length) throw new Error("");
+        if(quantityBooks.length === 3) return { success: false, message: "O usuário atingiu o limite de livros!" };
+        if(quantity === quantityBook.length) return { success: false, message: "O Livro em questão não está disponível!" };
 
-        return await this.prisma.reservations.create({
+        const reservationCreate = await this.prisma.reservations.create({
             data: {
                 due_date: dueDate,
                 reservation_date: currentDate,
                 book_id,
                 user_id
             }
-        })
+        });
+
+        if(!reservationCreate) return { success: false, message: "Erro ao registrar o livro!" };
+        
+        return { success: true, message: "Livro registrado com sucesso!" };
     }
 
     async list(){
@@ -78,6 +76,8 @@ export class ReservationService {
                 user: true
             }
         });
+
+        if(!reservations) return { success: false, message: "Erro ao registrar a reserva!" };
         
         const viewReservationsDTO = reservations.map((reservation, index)=> {
             let viewReservationDTO: ViewReservationDTO = {
@@ -112,6 +112,8 @@ export class ReservationService {
             }
         });
 
+        if(!reservations) return { success: false, message: "Erro ao listar as reservas do usuário!" };
+
         const viewReservationsDTO = reservations.map((reservation)=> {
             let viewReservationDTO: ViewReservationDTO = {
                 id: reservation.id,
@@ -140,6 +142,8 @@ export class ReservationService {
                 user: true
             }
         });
+
+        if(!reservations) return { success: false, message: "Erro ao listar os livros registrados!" };
 
         const viewReservationsDTO = reservations.map((reservation)=> {
             let viewReservationDTO: ViewReservationDTO = {
@@ -172,8 +176,8 @@ export class ReservationService {
             }
         });
 
-        if(!result) throw new Error("");
-
-        return true;
+        if(!result) return { success: false, message: "Erro ao trocar o status do livro!" };
+        
+        return { success: true, message: "Livro recebido!" };
     }
 }

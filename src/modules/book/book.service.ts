@@ -9,19 +9,31 @@ export class BookService {
     constructor(private readonly prisma: PrismaService){}
 
     async create(data: CreateBookDTO){
-        return await this.prisma.books.create({
+        const bookCreate = await this.prisma.books.create({
             data
         });
+
+        if(!bookCreate) return { success: false, message: "Erro ao registrar o Livro!" };
+
+        return { success: true, message: "Livro registrado com sucesso!" }
     }
 
     async list(){
-        return await this.prisma.books.findMany();
+        const bookList = await this.prisma.books.findMany();
+
+        if(!bookList) return { success: false, message: "Erro ao listar os Livros!" };
+
+        return bookList;
     }
 
     async show(id: number) {
-        return await this.prisma.books.findUnique({
+        const book = await this.prisma.books.findUnique({
             where: { id }
         });
+
+        if(!book) return { success: false, message: "Erro ao buscar o Livro!" };
+
+        return book;
     }
 
     async update(data: UpdatePutBookDTO, id: number){
@@ -30,9 +42,9 @@ export class BookService {
             data
         });
 
-        if(!updateBook) throw new Error("");
+        if(!updateBook) return { success: false, message: "Erro ao atualizar o Livro!" };
 
-        return true;
+        return { success: true, message: "Livro atualizado!" }
     }
 
     async updatePatch(data: UpdatePatchBookDTO, id: number) {
@@ -41,9 +53,9 @@ export class BookService {
             data
         });
 
-        if(!updateBook) throw new Error("");
-    
-        return true;
+        if(!updateBook) return { success: false, message: "Erro ao atualizar o Livro!" };
+
+        return { success: true, message: "Livro atualizado!" }
     }
 
     async delete(id: number){
@@ -51,8 +63,8 @@ export class BookService {
             where: { id }
         });
 
-        if(!deleteBook) throw new Error("");
+        if(!deleteBook) return { success: false, message: "Erro ao deletar o Livro!" };
 
-        return true;
+        return { success: true, message: "Livro deletado!" }
     }
 }

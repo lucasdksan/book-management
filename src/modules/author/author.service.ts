@@ -9,19 +9,31 @@ export class AuthorService {
     constructor(private readonly prisma: PrismaService){}
 
     async create(data: CreateAuthorDTO){
-        return await this.prisma.authors.create({
+        const authorCreate = await this.prisma.authors.create({
             data
         });
+
+        if(!authorCreate) return { success: false, message: "Erro ao registrar o autor, Revisar os dados oferecidos!" };
+
+        return { success: true, message: "Autor registrado com sucesso!" }
     }
 
     async list(){
-        return await this.prisma.authors.findMany();
+        const authorList = await this.prisma.authors.findMany();
+
+        if(!authorList) return { success: false, message: "Erro ao listar os autores!" };
+
+        return authorList;
     }
 
     async show(id: number){
-        return await this.prisma.authors.findUnique({
+        const author = await this.prisma.authors.findUnique({
             where: { id }
         });
+
+        if(!author) return { success: false, message: "Erro ao buscar o autor!" };
+        
+        return author;
     }
 
     async update(data: UpdatePutAuthorDTO, id: number){
@@ -30,9 +42,9 @@ export class AuthorService {
             data
         });
 
-        if(!updateAuthor) throw new Error("");
+        if(!updateAuthor) return { success: false, message: "Erro ao atualizar o autor!" };
 
-        return true;
+        return { success: true, message: "Informações do autor atualizado!" };
     }
 
     async updatePatch(data: UpdatePatchAuthorDTO, id: number) {
@@ -41,9 +53,9 @@ export class AuthorService {
             data
         });
 
-        if(!updateAuthor) throw new Error("");
+        if(!updateAuthor) return { success: false, message: "Erro ao atualizar o autor!" };
 
-        return true;
+        return { success: true, message: "Informações do autor atualizado!" };
     }
 
     async delete(id: number){
@@ -55,8 +67,8 @@ export class AuthorService {
             where: { id }
         });
 
-        if(!deleteAuthor || !deleteBooks) throw new Error("");
+        if(!deleteAuthor || !deleteBooks) return { success: false, message: "Erro ao deletar o Autor!" };
 
-        return true;
+        return { success: true, message: "Autor deletado com sucesso!" };
     }
 }
