@@ -1,12 +1,13 @@
 import * as bcrypt from "bcrypt";
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { Role as PrismaRole } from "@prisma/client";
 import { PrismaService } from "../../prisma/prisma.service";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { ViewUserDTO } from "./dto/view-user.dto";
-import { Role } from "../../common/enums/role.enums";
+import { Role } from "../../common/enums/role.enum";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
+import { CustomException } from "../../common/exceptions/custom-exception.exception";
 
 @Injectable()
 export class UserService {
@@ -14,9 +15,9 @@ export class UserService {
 
     private convertPrismaRoleToRole(prismaRole: PrismaRole): Role {
         if(prismaRole === "ADMIN") {
-            return Role.Admin
+            return Role.Admin;
         } else {
-            return Role.User
+            return Role.User;
         }
     }
 
@@ -39,7 +40,7 @@ export class UserService {
 
         const existUser = await this.existUser(user.email);
 
-        if(existUser) return { success: false, message: "Usuário já registrado!" }
+        if(existUser) throw new CustomException(false, "Usuário já registrado!", HttpStatus.UNPROCESSABLE_ENTITY);
 
         const userCreate = await this.prisma.users.create({
             data: {
@@ -48,7 +49,7 @@ export class UserService {
             }
         });
 
-        if(!userCreate) return { success: false, message: "Erro ao registrar o usuário!" };
+        if(!userCreate) throw new CustomException(false, "Erro ao registrar o usuário!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Usuário registrado" };
     }
@@ -60,7 +61,7 @@ export class UserService {
             }
         });
 
-        if (!users) return { success: false, message: "Erro ao listar os usuários!" };
+        if (!users) throw new CustomException(false, "Erro ao listar os usuários!", HttpStatus.BAD_REQUEST);
 
         const viewUsersDTO = users.map((user)=> {
             let viewUserDTO: ViewUserDTO = {
@@ -86,7 +87,7 @@ export class UserService {
             }
         });
 
-        if (!user) return { success: false, message: "Erro ao buscar o usuário!" };
+        if (!user) throw new CustomException(false, "Erro ao buscar o usuário!", HttpStatus.BAD_REQUEST);
 
         const viewUserDTO: ViewUserDTO = {
             id: user.id,
@@ -107,7 +108,7 @@ export class UserService {
             data
         });
 
-        if(!updateUser) return { success: false, message: "Erro ao atualizar o usuário!" };
+        if(!updateUser) throw new CustomException(false, "Erro ao atualizar o usuário!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Usuário atualizado!" };
     }
@@ -118,7 +119,7 @@ export class UserService {
             data
         });
 
-        if(!updateUser) return { success: false, message: "Erro ao atualizar o usuário!" };
+        if(!updateUser) throw new CustomException(false, "Erro ao atualizar o usuário!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Usuário atualizado!" };
     }
@@ -130,7 +131,7 @@ export class UserService {
             }
         });
 
-        if(!deleteUser) return { success: false, message: "Erro ao deletar o usuário!" };
+        if(!deleteUser) throw new CustomException(false, "Erro ao deletar o usuário!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Usuário deletado!" };
     }

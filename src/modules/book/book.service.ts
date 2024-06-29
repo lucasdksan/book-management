@@ -1,19 +1,37 @@
-import { Injectable } from "@nestjs/common";
+import { HttpCode, HttpStatus, Injectable } from "@nestjs/common";
 import { CreateBookDTO } from "./dto/create-book.dto";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UpdatePutBookDTO } from "./dto/update-put-book.dto";
 import { UpdatePatchBookDTO } from "./dto/update-patch-book.dto";
+import { CustomException } from "../../common/exceptions/custom-exception.exception";
 
 @Injectable()
 export class BookService {
     constructor(private readonly prisma: PrismaService){}
 
+    private async bookExistsInDb(title?: string, id?: number){
+        const book = await this.prisma.books.findFirst({
+            where: {
+                OR: [
+                    { title },
+                    { id }
+                ].filter(Boolean)
+            }
+        });
+
+        return !!book;
+    }
+
     async create(data: CreateBookDTO){
+        const bookExists = await this.bookExistsInDb(data.title, undefined);
+
+        if(bookExists) throw new CustomException(false, "O livro já registrado", HttpStatus.UNPROCESSABLE_ENTITY);
+        
         const bookCreate = await this.prisma.books.create({
             data
         });
 
-        if(!bookCreate) return { success: false, message: "Erro ao registrar o Livro!" };
+        if(!bookCreate) throw new CustomException(false, "Erro ao registrar o Livro!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Livro registrado com sucesso!" }
     }
@@ -21,7 +39,7 @@ export class BookService {
     async list(){
         const bookList = await this.prisma.books.findMany();
 
-        if(!bookList) return { success: false, message: "Erro ao listar os Livros!" };
+        if(!bookList) throw new CustomException(false, "Erro ao listar os Livros!", HttpStatus.BAD_REQUEST);
 
         return bookList;
     }
@@ -31,7 +49,7 @@ export class BookService {
             where: { id }
         });
 
-        if(!book) return { success: false, message: "Erro ao buscar o Livro!" };
+        if(!book) throw new CustomException(false, "Erro ao buscar o Livro!", HttpStatus.BAD_REQUEST);
 
         return book;
     }
@@ -42,7 +60,7 @@ export class BookService {
             data
         });
 
-        if(!updateBook) return { success: false, message: "Erro ao atualizar o Livro!" };
+        if(!updateBook) throw new CustomException(false, "Erro ao atualizar o Livro!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Livro atualizado!" }
     }
@@ -53,7 +71,7 @@ export class BookService {
             data
         });
 
-        if(!updateBook) return { success: false, message: "Erro ao atualizar o Livro!" };
+        if(!updateBook) throw new CustomException(false, "Erro ao atualizar o Livro!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Livro atualizado!" }
     }
@@ -63,7 +81,7 @@ export class BookService {
             where: { id }
         });
 
-        if(!deleteBook) return { success: false, message: "Erro ao deletar o Livro!" };
+        if(!deleteBook) throw new CustomException(false, "Erro ao deletar o Livro!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Livro deletado!" }
     }

@@ -1,19 +1,37 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { CreateCategoryDTO } from "./dto/create-category.dto";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UpdatePutCategoryDTO } from "./dto/update-put-category.dto";
 import { UpdatePatchCategoryDTO } from "./dto/update-patch-category.dto";
+import { CustomException } from "../../common/exceptions/custom-exception.exception";
 
 @Injectable()
 export class CategoryService {
     constructor(private readonly prisma: PrismaService){}
+
+    private async categoryExistsInDb(name?: string, id?: number){
+        const category = await this.prisma.categories.findFirst({
+            where: {
+                OR: [
+                    { name },
+                    { id }
+                ].filter(Boolean)
+            }
+        });
+
+        return !!category;
+    }
     
     async create(data: CreateCategoryDTO){
+        const categoryExists = await this.categoryExistsInDb(data.name, undefined);
+
+        if(categoryExists) throw new CustomException(false, "A categoria já existe", HttpStatus.UNPROCESSABLE_ENTITY);
+
         const categoryCreate = await this.prisma.categories.create({
             data
         });
 
-        if(!categoryCreate) return { success: false, message: "Erro ao criar categoria!" };
+        if(!categoryCreate) throw new CustomException(false, "Erro ao criar categoria!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Categoria criada com sucesso!" }
     }
@@ -21,7 +39,7 @@ export class CategoryService {
     async list(){
         const categoryList = await this.prisma.categories.findMany();
 
-        if(!categoryList) return { success: false, message: "Erro ao listar as categorias" };
+        if(!categoryList) throw new CustomException(false, "Erro ao listar as categorias", HttpStatus.BAD_REQUEST);
 
         return categoryList;
     }
@@ -31,7 +49,7 @@ export class CategoryService {
             where: { id }
         });
 
-        if(!category) return { success: false, message: "Erro ao buscar a categoria" };
+        if(!category) throw new CustomException(false, "Erro ao buscar a categoria", HttpStatus.BAD_REQUEST);
 
         return category;
     }
@@ -42,7 +60,7 @@ export class CategoryService {
             data
         });
 
-        if(!updateCategory) return { success: false, message: "Erro ao atualizar a categoria!" };
+        if(!updateCategory) throw new CustomException(false, "Erro ao atualizar a categoria!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Categoria atualizada com sucesso!" }
     }
@@ -53,7 +71,7 @@ export class CategoryService {
             data
         });
 
-        if(!updateCategory) return { success: false, message: "Erro ao atualizar a categoria!" };
+        if(!updateCategory) throw new CustomException(false, "Erro ao atualizar a categoria!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Categoria atualizada com sucesso!" }
     }
@@ -63,7 +81,7 @@ export class CategoryService {
             where: { id }
         });
 
-        if(!deleteCategory) return { success: false, message: "Erro ao deletar a categoria!" };
+        if(!deleteCategory) throw new CustomException(false, "Erro ao deletar a categoria!", HttpStatus.BAD_REQUEST);
 
         return { success: true, message: "Categoria deletada com sucesso!" }
     }

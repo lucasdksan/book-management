@@ -19,7 +19,6 @@ model Books {
     categorie        Categories?    @relation(fields: [categorie_id], references: [id])
     categorie_id     Int?
     reservations     Reservations[]
-    waitlist         Waitlist[]
     created_at       DateTime       @default(now())
     update_at        DateTime       @updatedAt
 
@@ -53,10 +52,10 @@ model Users {
     email            String         @unique
     password         String
     role             Role           @default(USER)
+    score            Int            @default(10)
     penalty_end_date DateTime?
     birth_at         DateTime?
     reservations     Reservations[]
-    waitlist         Waitlist[]
     created_at       DateTime       @default(now())
     update_at        DateTime       @updatedAt
 
@@ -76,20 +75,6 @@ model Reservations {
     update_at        DateTime          @updatedAt
 
     @@map("reservations")
-}
-
-model Waitlist {
-    id         Int      @id @default(autoincrement())
-    book       Books    @relation(fields: [book_id], references: [id])
-    book_id    Int
-    user       Users    @relation(fields: [user_id], references: [id])
-    user_id    Int
-    position   Int
-    entry_date DateTime
-    created_at DateTime @default(now())
-    update_at  DateTime @updatedAt
-
-    @@map("waitlist")
 }
 
 enum ReservationStatus {

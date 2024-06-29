@@ -1,5 +1,5 @@
 import { IsDateString, IsEmail, IsEnum, IsNumber, IsOptional, IsString } from "class-validator";
-import { Role } from "../../../common/enums/role.enums";
+import { Role } from "../../../common/enums/role.enum";
 
 export class ViewUserDTO {
     @IsNumber()

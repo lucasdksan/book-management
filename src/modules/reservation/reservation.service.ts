@@ -1,9 +1,10 @@
-import { Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { ReservationStatus as PrismaStatus } from "@prisma/client";
 import { CreateReservationDTO } from "./dto/create-reservation.dto";
 import { PrismaService } from "../../prisma/prisma.service";
 import { ViewReservationDTO } from "./dto/view-reservation.dto";
-import { ReservationStatus } from "../../common/enums/reservationStatus.enums";
+import { ReservationStatus } from "../../common/enums/reservation-status.enum";
+import { CustomException } from "../../common/exceptions/custom-exception.exception";
 
 @Injectable()
 export class ReservationService {
@@ -36,7 +37,7 @@ export class ReservationService {
         const dueDate = nowDate.toJSON();
         const currentDate = new Date().toJSON();
 
-        if(!book_id || !user_id) throw new Error("");
+        if(!book_id || !user_id) throw new CustomException(false, "Livro ou Usuário não existe!", HttpStatus.UNPROCESSABLE_ENTITY);
 
         const quantity = await this.getQuantityBook(book_id);
         const quantityBooks = await this.prisma.reservations.findMany({
@@ -52,8 +53,8 @@ export class ReservationService {
             }
         });
 
-        if(quantityBooks.length === 3) return { success: false, message: "O usuário atingiu o limite de livros!" };
-        if(quantity === quantityBook.length) return { success: false, message: "O Livro em questão não está disponível!" };
+        if(quantityBooks.length === 3) throw new CustomException(false, "O usuário atingiu o limite de livros!", HttpStatus.BAD_REQUEST);
+        if(quantity === quantityBook.length) throw new CustomException(false, "O Livro em questão não está disponível!", HttpStatus.BAD_REQUEST);
 
         const reservationCreate = await this.prisma.reservations.create({
             data: {
@@ -64,7 +65,7 @@ export class ReservationService {
             }
         });
 
-        if(!reservationCreate) return { success: false, message: "Erro ao registrar o livro!" };
+        if(!reservationCreate) throw new CustomException(false, "Erro ao registrar o livro!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Livro registrado com sucesso!" };
     }
@@ -77,7 +78,7 @@ export class ReservationService {
             }
         });
 
-        if(!reservations) return { success: false, message: "Erro ao registrar a reserva!" };
+        if(!reservations) throw new CustomException(false, "Erro ao registrar a reserva!", HttpStatus.BAD_REQUEST);
         
         const viewReservationsDTO = reservations.map((reservation, index)=> {
             let viewReservationDTO: ViewReservationDTO = {
@@ -112,7 +113,7 @@ export class ReservationService {
             }
         });
 
-        if(!reservations) return { success: false, message: "Erro ao listar as reservas do usuário!" };
+        if(!reservations) throw new CustomException(false, "Erro ao listar as reservas do usuário!", HttpStatus.BAD_REQUEST);
 
         const viewReservationsDTO = reservations.map((reservation)=> {
             let viewReservationDTO: ViewReservationDTO = {
@@ -143,7 +144,7 @@ export class ReservationService {
             }
         });
 
-        if(!reservations) return { success: false, message: "Erro ao listar os livros registrados!" };
+        if(!reservations) throw new CustomException(false, "Erro ao listar os livros registrados!", HttpStatus.BAD_REQUEST);
 
         const viewReservationsDTO = reservations.map((reservation)=> {
             let viewReservationDTO: ViewReservationDTO = {
@@ -176,7 +177,7 @@ export class ReservationService {
             }
         });
 
-        if(!result) return { success: false, message: "Erro ao trocar o status do livro!" };
+        if(!result) throw new CustomException(false, "Erro ao trocar o status do livro!", HttpStatus.BAD_REQUEST);
         
         return { success: true, message: "Livro recebido!" };
     }
