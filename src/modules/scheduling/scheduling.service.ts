@@ -1,36 +1,66 @@
 import { Injectable } from "@nestjs/common";
-import { Cron, CronExpression } from "@nestjs/schedule";
+import { Cron, CronExpression, SchedulerRegistry } from "@nestjs/schedule";
 import { PrismaService } from "../../prisma/prisma.service";
+import { SchedulingData } from "./dto/scheduling-data.dto";
 
 @Injectable()
 export class SchedulingService {
-    constructor(private readonly prisma: PrismaService){}
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly schedulerRegistry: SchedulerRegistry
+    ){}
 
-    private async updateStatus(bookId: number){
+    private async updateStatus(statusData: SchedulingData){
+        const resultBook = await this.prisma.reservations.update({
+            where: { id:statusData.bookId },
+            data: { status: "LATE" }
+        });
 
+        const user = await this.prisma.users.findUnique({
+            where: { id: statusData.userId }
+        });
+
+        const score = user.score;
+
+        const resultUser = await this.prisma.users.update({
+            where: { id: statusData.userId },
+            data: { score: score - 1 }
+        })
+
+        console.log({ resultBook, resultUser });
     }
 
-    @Cron(CronExpression.EVERY_30_SECONDS)
+    @Cron(CronExpression.EVERY_DAY_AT_2AM, {
+        name: 'handleCronJob',
+    })
     async handleCron() {
-        const bookIdList: number[] = [];
+        const bookIdList: SchedulingData[] = [];
         const reservations = await this.prisma.reservations.findMany({
+            where: {
+                OR: [
+                    { status: "LATE" },
+                    { status: "RESERVED" }
+                ],
+                due_date: { lt: new Date() }
+            },
             include: {
                 book: true,
                 user: true
             }
         });
-        const nowDate = new Date();
-
-        reservations.forEach((reservation)=>{
-            let reservationDate = new Date(`${reservation.due_date}`);
-
-            if(reservationDate > nowDate) bookIdList.push(reservation.book_id);
+        
+        reservations.forEach((reservation) => {
+            bookIdList.push({ bookId: reservation.book_id, userId: reservation.user_id });
         });
 
-        if(bookIdList.length > 0) {
-            bookIdList.forEach((id)=>{
-                this.updateStatus(id);
-            });
+        if (bookIdList.length > 0) {
+            for (const data of bookIdList) {
+                await this.updateStatus(data);
+            }
+
+            const job = this.schedulerRegistry.getCronJob('handleCronJob');
+            job.stop();
+            console.log('Cron job parado após a execução.');
         }
     }
 }
