@@ -69,19 +69,9 @@ O CRUD deste sistema contém as seguintes entidades:
 - **update_at:** Data da última atualização do registro.
 </details>
 
-<details close="close">
-<summary>Lista de espera (Waitlist)</summary>
-
-- **id:** Identificador único da lista de espera.
-- **book_id:** Identificador do livro na lista de espera.
-- **user_id:** Identificador do usuário na lista de espera.
-- **position:** Posição do usuário na lista de espera.
-- **entry_date:** Data de entrada na lista de espera.
-- **created_at:** Data de criação do registro.
-- **update_at:** Data da última atualização do registro.
-</details>
-<br />
 <i>Observação: As entidades podem ser validadas no arquivo schema.prisma</i>
+
+**https://docs.nestjs.com/techniques/task-scheduling#declarative-cron-jobs**
 
 ## End Points
 

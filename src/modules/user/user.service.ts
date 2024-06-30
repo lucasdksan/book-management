@@ -71,7 +71,8 @@ export class UserService {
                 createdAt: user.created_at.toISOString(),
                 birth_at: user.birth_at?.toISOString(),
                 penaltyEndDate: user.penalty_end_date?.toISOString(),
-                role: this.convertPrismaRoleToRole(user.role)
+                role: this.convertPrismaRoleToRole(user.role),
+                score: user.score
             };
 
             return viewUserDTO;
@@ -96,7 +97,8 @@ export class UserService {
             createdAt: user.created_at.toISOString(),
             birth_at: user.birth_at?.toISOString(),
             penaltyEndDate: user.penalty_end_date?.toISOString(),
-            role: this.convertPrismaRoleToRole(user.role)
+            role: this.convertPrismaRoleToRole(user.role),
+            score: user.score
         }
 
         return viewUserDTO;

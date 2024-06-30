@@ -6,9 +6,11 @@ import { AuthorModule } from "./modules/author/author.module";
 import { CategoryModule } from "./modules/category/category.module";
 import { UserModule } from "./modules/user/user.module";
 import { ReservationModule } from "./modules/reservation/reservation.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { SchedulingModule } from "./modules/scheduling/scheduling.module";
 
 @Module({
-  imports: [BookModule, AuthorModule, CategoryModule, UserModule, ReservationModule],
+  imports: [BookModule, AuthorModule, CategoryModule, UserModule, ReservationModule, ScheduleModule.forRoot(), SchedulingModule],
   controllers: [AppController],
   providers: [AppService],
 })

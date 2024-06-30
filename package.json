@@ -25,6 +25,7 @@
     "@nestjs/core": "^10.0.0",
     "@nestjs/mapped-types": "^2.0.5",
     "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/schedule": "^4.0.2",
     "@prisma/client": "^5.14.0",
     "@prisma/extension-accelerate": "^1.0.0",
     "bcrypt": "^5.1.1",

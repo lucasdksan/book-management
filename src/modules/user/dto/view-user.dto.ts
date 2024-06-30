@@ -23,4 +23,7 @@ export class ViewUserDTO {
 
     @IsDateString()
     createdAt: string;
+
+    @IsNumber()
+    score: number;
 }
