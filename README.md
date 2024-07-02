@@ -49,6 +49,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **email:** Email do usuário.
 - **password:** Senha do usuário.
 - **role:** Papel do usuário (ADMIN ou USER).
+- **score:** Valor para determinar prioridade na reserva dos livros.
 - **penalty_end_date:** Data de fim da penalidade.
 - **birth_at:** Data do aniversário.
 - **created_at:** Data de criação do registro.
