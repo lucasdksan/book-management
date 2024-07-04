@@ -5,7 +5,9 @@ import { UpdatePutAuthorDTO } from "./dto/update-put-author.dto";
 import { UpdatePatchAuthorDTO } from "./dto/update-patch-author.dto";
 import { ParamId } from "../../common/decorators/param-id.decorator";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
+import { Public } from "../../common/decorators/public.decorator";
 
+@Public()
 @Controller("authors")
 export class AuthorController {
     constructor(private readonly authorService: AuthorService) {}

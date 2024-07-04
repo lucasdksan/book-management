@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { AppController } from "./app.controller";
 import { BookModule } from "./modules/book/book.module";
@@ -11,7 +11,16 @@ import { SchedulingModule } from "./modules/scheduling/scheduling.module";
 import { AuthModule } from "./auth/auth.module";
 
 @Module({
-  imports: [BookModule, AuthorModule, CategoryModule, UserModule, ReservationModule, ScheduleModule.forRoot(), SchedulingModule, AuthModule],
+  imports: [
+    BookModule, 
+    AuthorModule, 
+    CategoryModule, 
+    ReservationModule, 
+    ScheduleModule.forRoot(), 
+    SchedulingModule, 
+    forwardRef(() => UserModule), 
+    forwardRef(() => AuthModule),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

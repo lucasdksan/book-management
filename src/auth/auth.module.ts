@@ -7,6 +7,7 @@ import { JwtModule } from "@nestjs/jwt";
 import { env } from "../environment/env";
 import { LocalStrategy } from "../common/strategies/local.strategy";
 import { JwtStrategy } from "../common/strategies/jwt.strategy";
+import { UserModule } from "../modules/user/user.module";
 
 @Module({
     imports: [
@@ -14,8 +15,13 @@ import { JwtStrategy } from "../common/strategies/jwt.strategy";
         PassportModule,
         JwtModule.register({
             secret: env.JWT_SECRET,
-            signOptions: { expiresIn: "2 days" },
+            signOptions: { 
+                expiresIn: "2 days",
+                issuer: "login",
+                audience: "users"
+            },
         }),
+        UserModule
     ],
     controllers: [AuthController],
     providers: [AuthService, LocalStrategy, JwtStrategy],

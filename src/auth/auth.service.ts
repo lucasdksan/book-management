@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomException } from "../common/exceptions/custom-exception.exception";
 import { JwtService } from "@nestjs/jwt";
@@ -32,5 +32,18 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload),
         };
+    }
+
+    checkToken(token: string){
+        try {
+            const data = this.jwtService.verify(token, {
+                issuer: "login",
+                audience: "users"
+            });
+
+            return data;
+        } catch (error) {
+            throw new CustomException(false, error, HttpStatus.BAD_REQUEST);
+        }
     }
 }
