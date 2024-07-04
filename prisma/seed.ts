@@ -1,7 +1,10 @@
 import { PrismaClient } from "@prisma/client";
+import * as bcrypt from "bcrypt";
+
 const prisma = new PrismaClient();
 
 async function main() {
+    const salt = await bcrypt.genSalt();
     const author1 = await prisma.authors.create({
         data: {
             name: "Author 1",
@@ -56,7 +59,7 @@ async function main() {
         data: {
             name: "User 1",
             email: "user1@example.com",
-            password: "password1",
+            password: await bcrypt.hash("password1", salt),
         },
     });
 
@@ -64,7 +67,7 @@ async function main() {
         data: {
             name: "User 2",
             email: "user2@example.com",
-            password: "password2",
+            password: await bcrypt.hash("password2", salt),
         },
     });
 
