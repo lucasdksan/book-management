@@ -1,17 +1,22 @@
 import { AuthorService } from "./author.service";
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { CreateAuthorDTO } from "./dto/create-author.dto";
 import { UpdatePutAuthorDTO } from "./dto/update-put-author.dto";
 import { UpdatePatchAuthorDTO } from "./dto/update-patch-author.dto";
 import { ParamId } from "../../common/decorators/param-id.decorator";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
-import { Public } from "../../common/decorators/public.decorator";
+import { JwtAuthGuard } from "../../common/guards/jwt.guard";
+import { Role } from "../../common/enums/role.enum";
+import { Roles } from "../../common/decorators/roles.decorator";
+import { RoleGuard } from "../../common/guards/role.guard";
 
-@Public()
+@UseGuards(JwtAuthGuard)
 @Controller("authors")
 export class AuthorController {
     constructor(private readonly authorService: AuthorService) {}
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Post()
     async create(@Body() body: CreateAuthorDTO){
         try {
@@ -23,6 +28,8 @@ export class AuthorController {
         }
     }
 
+    @Roles(Role.Admin, Role.User)
+    @UseGuards(RoleGuard)
     @Get()
     async list(){
         try {
@@ -34,6 +41,8 @@ export class AuthorController {
         }
     }
 
+    @Roles(Role.Admin, Role.User)
+    @UseGuards(RoleGuard)
     @Get(":id")
     async read(@ParamId() id:number){
         try {
@@ -45,6 +54,8 @@ export class AuthorController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Put(":id")
     async update(@Body() body: UpdatePutAuthorDTO, @ParamId() id:number){
         try {
@@ -56,6 +67,8 @@ export class AuthorController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Patch(":id")
     async updatePartial(@Body() body: UpdatePatchAuthorDTO, @ParamId() id:number) {
         try {
@@ -67,6 +80,8 @@ export class AuthorController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Delete(":id")
     async delete(@ParamId() id:number) {
         try {

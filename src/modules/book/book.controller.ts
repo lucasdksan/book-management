@@ -1,14 +1,21 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { BookService } from "./book.service";
 import { CreateBookDTO } from "./dto/create-book.dto";
 import { UpdatePutBookDTO } from "./dto/update-put-book.dto";
 import { ParamId } from "../../common/decorators/param-id.decorator";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
+import { JwtAuthGuard } from "../../common/guards/jwt.guard";
+import { Roles } from "../../common/decorators/roles.decorator";
+import { RoleGuard } from "../../common/guards/role.guard";
+import { Role } from "../../common/enums/role.enum";
 
+@UseGuards(JwtAuthGuard)
 @Controller("books")
 export class BookController {
     constructor(private readonly bookService: BookService){}
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Post()
     async create(@Body() body: CreateBookDTO){
         try {
@@ -20,6 +27,8 @@ export class BookController {
         }
     }
 
+    @Roles(Role.Admin, Role.User)
+    @UseGuards(RoleGuard)
     @Get()
     async list(){
         try {
@@ -31,6 +40,8 @@ export class BookController {
         }
     }
 
+    @Roles(Role.Admin, Role.User)
+    @UseGuards(RoleGuard)
     @Get(":id")
     async read(@ParamId() id:number){
         try {
@@ -42,6 +53,8 @@ export class BookController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Put(":id")
     async update(@Body() body: UpdatePutBookDTO, @ParamId() id:number){
         try {
@@ -53,6 +66,8 @@ export class BookController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Patch(":id")
     async updatePartial(@Body() body: UpdatePutBookDTO, @ParamId() id:number) {
         try {
@@ -64,6 +79,8 @@ export class BookController {
         }
     }
 
+    @Roles(Role.Admin)
+    @UseGuards(RoleGuard)
     @Delete(":id")
     async delete(@ParamId() id:number) {
         try {

@@ -3,12 +3,15 @@ import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomException } from "../common/exceptions/custom-exception.exception";
 import { JwtService } from "@nestjs/jwt";
+import { AuthRegisterDTO } from "./dto/auth-register.dto";
+import { UserService } from "../modules/user/user.service";
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly prisma: PrismaService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly useService: UserService
     ){}
 
     async validateUser(email: string, password: string){
@@ -44,6 +47,14 @@ export class AuthService {
             return data;
         } catch (error) {
             throw new CustomException(false, error, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    async register(data: AuthRegisterDTO) {
+        const { success, user } = await this.useService.register(data);
+
+        if(success) {
+            return this.login(user);
         }
     }
 }

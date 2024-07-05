@@ -54,6 +54,27 @@ export class UserService {
         return { success: true, message: "Usuário registrado" };
     }
 
+    async register(data: CreateUserDTO) {
+        const salt = await bcrypt.genSalt();
+        const { password, ...user } = data;
+        const newPassword = await bcrypt.hash(password, salt);
+
+        const existUser = await this.existUser(user.email);
+
+        if(existUser) throw new CustomException(false, "Usuário já registrado!", HttpStatus.UNPROCESSABLE_ENTITY);
+
+        const userCreate = await this.prisma.users.create({
+            data: {
+                password: newPassword,
+                ...user
+            }
+        });
+
+        if(!userCreate) throw new CustomException(false, "Erro ao registrar o usuário!", HttpStatus.BAD_REQUEST);
+        
+        return { success: true, message: "Usuário registrado", user: userCreate };
+    }
+
     async list() {
         const users = await this.prisma.users.findMany({
             where: {
