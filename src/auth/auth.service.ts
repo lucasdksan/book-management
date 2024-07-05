@@ -1,5 +1,5 @@
 import * as bcrypt from "bcrypt";
-import { BadRequestException, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomException } from "../common/exceptions/custom-exception.exception";
 import { JwtService } from "@nestjs/jwt";

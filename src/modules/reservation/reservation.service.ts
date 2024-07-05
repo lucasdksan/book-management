@@ -166,9 +166,10 @@ export class ReservationService {
         return viewReservationsDTO;
     }
 
-    async returnedBook(bookId: number, userId: number){
+    async returnedBook(id: number, userId: number, bookId: number){
         const result = await this.prisma.reservations.updateMany({
             where: {
+                id,
                 user_id: userId,
                 book_id: bookId
             },

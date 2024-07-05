@@ -50,7 +50,7 @@ export class SchedulingService {
         });
         
         reservations.forEach((reservation) => {
-            bookIdList.push({ bookId: reservation.book_id, userId: reservation.user_id });
+            bookIdList.push({ bookId: reservation.book_id, userId: reservation.user_id, status: reservation.status });
         });
 
         if (bookIdList.length > 0) {

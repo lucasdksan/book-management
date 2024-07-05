@@ -68,9 +68,9 @@ export class ReservationController {
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Get("/returned/:id")
-    async returnedBook(@ParamId() id: number, @Query("userId") userId: string){
+    async returnedBook(@ParamId() id: number, @Query("userId") userId: string, @Query("bookId") bookId: string){
         try {
-            const result = await this.reservationService.returnedBook(id, Number(userId));
+            const result = await this.reservationService.returnedBook(id, Number(userId), Number(bookId));
             return result;
         } catch (error) {
             if (error instanceof HttpException) throw error;

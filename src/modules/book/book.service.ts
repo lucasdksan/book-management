@@ -1,4 +1,4 @@
-import { HttpCode, HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable } from "@nestjs/common";
 import { CreateBookDTO } from "./dto/create-book.dto";
 import { PrismaService } from "../../prisma/prisma.service";
 import { UpdatePutBookDTO } from "./dto/update-put-book.dto";
