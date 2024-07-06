@@ -1,4 +1,3 @@
-import { AuthorService } from "./author.service";
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put, UseGuards } from "@nestjs/common";
 import { CreateAuthorDTO } from "./dto/create-author.dto";
 import { UpdatePutAuthorDTO } from "./dto/update-put-author.dto";
@@ -9,6 +8,7 @@ import { JwtAuthGuard } from "../../common/guards/jwt.guard";
 import { Role } from "../../common/enums/role.enum";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
+import { AuthorService } from "./author.service";
 
 @UseGuards(JwtAuthGuard)
 @Controller("authors")

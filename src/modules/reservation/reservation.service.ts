@@ -1,10 +1,10 @@
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { ReservationStatus as PrismaStatus } from "@prisma/client";
 import { CreateReservationDTO } from "./dto/create-reservation.dto";
-import { PrismaService } from "../../prisma/prisma.service";
 import { ViewReservationDTO } from "./dto/view-reservation.dto";
 import { ReservationStatus } from "../../common/enums/reservation-status.enum";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class ReservationService {

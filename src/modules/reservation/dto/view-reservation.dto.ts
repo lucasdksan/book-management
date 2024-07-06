@@ -1,6 +1,6 @@
 import { IsDateString, IsEmail, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
-import { ReservationStatus } from "../../../common/enums/reservation-status.enum";
 import { Type } from "class-transformer";
+import { ReservationStatus } from "../../../common/enums/reservation-status.enum";
 
 class Book {
     @IsNumber()

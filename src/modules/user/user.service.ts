@@ -1,13 +1,13 @@
 import * as bcrypt from "bcrypt";
 import { HttpStatus, Injectable } from "@nestjs/common";
 import { Role as PrismaRole } from "@prisma/client";
-import { PrismaService } from "../../prisma/prisma.service";
 import { CreateUserDTO } from "./dto/create-user.dto";
 import { ViewUserDTO } from "./dto/view-user.dto";
-import { Role } from "../../common/enums/role.enum";
 import { UpdatePutUserDTO } from "./dto/update-put-user.dto";
 import { UpdatePatchUserDTO } from "./dto/update-patch-user.dto";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
+import { Role } from "../../common/enums/role.enum";
+import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class UserService {

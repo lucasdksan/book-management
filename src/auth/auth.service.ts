@@ -1,11 +1,13 @@
-import * as bcrypt from "bcrypt";
 import { HttpStatus, Injectable } from "@nestjs/common";
+import { MailerService } from "@nestjs-modules/mailer";
+import { JwtService } from "@nestjs/jwt";
+import * as bcrypt from "bcrypt";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomException } from "../common/exceptions/custom-exception.exception";
-import { JwtService } from "@nestjs/jwt";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
 import { UserService } from "../modules/user/user.service";
-import { MailerService } from "@nestjs-modules/mailer";
+import { AuthUpdateDTO } from "./dto/auth-update.dto";
+
 
 @Injectable()
 export class AuthService {
@@ -116,5 +118,34 @@ export class AuthService {
         if (!user) throw new CustomException(false, "Email está incorreto!", HttpStatus.UNAUTHORIZED);
 
         return this.login(user);
+    }
+
+    async updatePatch(data: AuthUpdateDTO, user: any) {
+        const updateUser = await this.prisma.users.update({
+            where: { id: user.id },
+            data
+        });
+
+        if(!updateUser) throw new CustomException(false, "Erro ao atualizar o usuário!", HttpStatus.BAD_REQUEST);
+        
+        return { success: true, message: "Usuário atualizado!" };
+    }
+
+    async changePassword(password: string, data: any){
+        const salt = await bcrypt.genSalt();
+        const pass = await bcrypt.hash(password, salt);
+
+        const user = await this.prisma.users.update({
+            where: {
+                id: data.id
+            },
+            data: {
+                password: pass,
+            }
+        });
+
+        if (!user) throw new CustomException(false, "Email está incorreto!", HttpStatus.UNAUTHORIZED);
+
+        return { success: true, message: "Senha atualizada!" };
     }
 }

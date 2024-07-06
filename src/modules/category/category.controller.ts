@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpException, HttpStatus, Patch, Post, Put, UseGuards } from "@nestjs/common";
-import { CategoryService } from "./category.service";
 import { CreateCategoryDTO } from "./dto/create-category.dto";
 import { UpdatePutCategoryDTO } from "./dto/update-put-category.dto";
 import { UpdatePatchCategoryDTO } from "./dto/update-patch-category.dto";
@@ -9,6 +8,7 @@ import { JwtAuthGuard } from "../../common/guards/jwt.guard";
 import { Role } from "../../common/enums/role.enum";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
+import { CategoryService } from "./category.service";
 
 @UseGuards(JwtAuthGuard)
 @Controller("/categories")

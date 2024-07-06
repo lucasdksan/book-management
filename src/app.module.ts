@@ -1,4 +1,5 @@
 import { forwardRef, Module } from "@nestjs/common";
+import { ScheduleModule } from "@nestjs/schedule";
 import { MailerModule } from "@nestjs-modules/mailer";
 import { PugAdapter } from "@nestjs-modules/mailer/dist/adapters/pug.adapter";
 import { AppService } from "./app.service";
@@ -8,11 +9,10 @@ import { AuthorModule } from "./modules/author/author.module";
 import { CategoryModule } from "./modules/category/category.module";
 import { UserModule } from "./modules/user/user.module";
 import { ReservationModule } from "./modules/reservation/reservation.module";
-import { ScheduleModule } from "@nestjs/schedule";
-import { AuthModule } from "./auth/auth.module";
-import { env } from "./environment/env";
 import { SchedulingService } from "./modules/scheduling/scheduling.service";
+import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "./prisma/prisma.module";
+import { env } from "./common/environments/env.environment";
 
 @Module({
   imports: [
