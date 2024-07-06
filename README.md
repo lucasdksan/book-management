@@ -10,14 +10,15 @@ O CRUD deste sistema contém as seguintes entidades:
 <summary>Livros (Books)</summary>
 
 - **id:** Identificador único do livro.
-- **quantity:** Quantidade deste livro.
 - **title:** Título do livro.
 - **description:** Descrição do livro.
-- **quantity:** Quantidade do livro.
 - **price:** Preço do livro.
 - **publication_date:** Data de publicação do livro.
+- **author:** Autor do Livro.
+- **quantity:** Quantidade do livro.
 - **author_id:** Identificador do autor do livro.
 - **categorie_id:** Identificador da categoria do livro.
+- **reservations:** Lista de reservas.
 - **created_at:** Data de criação do registro.
 - **update_at:** Data da última atualização do registro.
 </details>
@@ -28,6 +29,7 @@ O CRUD deste sistema contém as seguintes entidades:
 - **id:** Identificador único do autor.
 - **name:** Nome do autor.
 - **biography:** Biografia do autor.
+- **books:** Lista de Livros. 
 - **created_at:** Data de criação do registro.
 - **update_at:** Data da última atualização do registro.
 </details>
@@ -37,6 +39,7 @@ O CRUD deste sistema contém as seguintes entidades:
 
 - **id:** Identificador único da categoria.
 - **name:** Nome da categoria.
+- **books:** Lista de Livros. 
 - **created_at:** Data de criação do registro.
 - **update_at:** Data da última atualização do registro.
 </details>
@@ -52,6 +55,13 @@ O CRUD deste sistema contém as seguintes entidades:
 - **score:** Valor para determinar prioridade na reserva dos livros.
 - **penalty_end_date:** Data de fim da penalidade.
 - **birth_at:** Data do aniversário.
+- **city:** Cidade do Usuário.
+- **uf:** Estado do Usuário.
+- **street:** Rua do Usuário.
+- **number:** Número da casa.
+- **neighborhood:** Bairro do usuário.
+- **cep:** CEP do usuário.
+- **reservations:** Lista de reservas.
 - **created_at:** Data de criação do registro.
 - **update_at:** Data da última atualização do registro.
 </details>
@@ -61,6 +71,8 @@ O CRUD deste sistema contém as seguintes entidades:
 <summary>Reservas (Reservations)</summary>
 
 - **id:** Identificador único da reserva.
+- **book:** Lista de Livros.
+- **user:** Lista de usuários.
 - **book_id:** Identificador do livro reservado.
 - **user_id:** Identificador do usuário que fez a reserva.
 - **reservation_date:** Data da reserva.
@@ -72,11 +84,13 @@ O CRUD deste sistema contém as seguintes entidades:
 
 <i>Observação: As entidades podem ser validadas no arquivo schema.prisma</i>
 
-**https://docs.nestjs.com/techniques/task-scheduling#declarative-cron-jobs**
-
 ## End Points
 
+
+
 ## Instalação
+
+Node >= 18
 
 ```bash
 $ npm install

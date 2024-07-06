@@ -55,6 +55,12 @@ model Users {
     score            Int            @default(10)
     penalty_end_date DateTime?
     birth_at         DateTime?
+    city             String
+    uf               String
+    street           String
+    number           String
+    neighborhood     String
+    cep              String
     reservations     Reservations[]
     created_at       DateTime       @default(now())
     update_at        DateTime       @updatedAt

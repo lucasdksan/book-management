@@ -60,6 +60,13 @@ async function main() {
             name: "User 1",
             email: "user1@example.com",
             password: await bcrypt.hash("password1", salt),
+            role: "ADMIN",
+            cep: "59145720",
+            city: "Parnamirim",
+            neighborhood: "Passagem de Areia",
+            number: "1859",
+            street: "Rua Capitão Martinho Machado",
+            uf: "RN"
         },
     });
 
@@ -68,6 +75,12 @@ async function main() {
             name: "User 2",
             email: "user2@example.com",
             password: await bcrypt.hash("password2", salt),
+            cep: "59145720",
+            city: "Parnamirim",
+            neighborhood: "Passagem de Areia",
+            number: "1859",
+            street: "Rua Capitão Martinho Machado",
+            uf: "RN"
         },
     });
 

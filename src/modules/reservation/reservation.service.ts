@@ -10,12 +10,20 @@ import { PrismaService } from "../../prisma/prisma.service";
 export class ReservationService {
     constructor(private readonly prisma: PrismaService) { }
 
-    private async getQuantityBook(bookId: number){
-        const quantity = await this.prisma.books.findUnique({
+    private async getBook(bookId: number){
+        const book = await this.prisma.books.findUnique({
             where: { id: bookId }
         });
 
-        return quantity.quantity;
+        return book;
+    }
+
+    private async getUser(userId: number) {
+        const user = await this.prisma.users.findUnique({
+            where: { id: userId }
+        });
+
+        return user;
     }
 
     private convertPrismaStatusToStatus(prismaStatus: PrismaStatus): ReservationStatus {
@@ -39,10 +47,15 @@ export class ReservationService {
 
         if(!book_id || !user_id) throw new CustomException(false, "Livro ou Usuário não existe!", HttpStatus.UNPROCESSABLE_ENTITY);
 
-        const quantity = await this.getQuantityBook(book_id);
+        const bookSelect = await this.getBook(book_id);
+        const quantity = bookSelect.quantity;
         const quantityBooks = await this.prisma.reservations.findMany({
             where: { user_id }
         });
+        const user = await this.getUser(user_id);
+        const penaltyDate = new Date(user.penalty_end_date);
+
+        if(nowDate < penaltyDate) throw new CustomException(false, "O usuário não pode fazer reserva!", HttpStatus.BAD_REQUEST);
 
         const quantityBook = await this.prisma.reservations.findMany({
             where: {
@@ -177,6 +190,20 @@ export class ReservationService {
                 status: "RETURNED"
             }
         });
+
+        const { penalty_end_date, score } = await this.getUser(userId);
+
+        if(!penalty_end_date) {
+            await this.prisma.users.update({
+                where: {
+                    id: userId
+                },
+                data: {
+                    score: score + 2,
+                    penalty_end_date: null
+                }
+            });
+        }
 
         if(!result) throw new CustomException(false, "Erro ao trocar o status do livro!", HttpStatus.BAD_REQUEST);
         

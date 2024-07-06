@@ -1,8 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { MailerService } from "@nestjs-modules/mailer";
 import { Cron, CronExpression, SchedulerRegistry } from "@nestjs/schedule";
 import { PrismaService } from "../../prisma/prisma.service";
 import { SchedulingData } from "./dto/scheduling-data.dto";
-import { MailerService } from "@nestjs-modules/mailer";
+import { SchedulingUser } from "./dto/scheduling-user.dto";
 
 @Injectable()
 export class SchedulingService {
@@ -18,6 +19,10 @@ export class SchedulingService {
         try {
             const user = await this.prisma.users.findUnique({ where: { id: userId } });
             const book = await this.prisma.books.findUnique({ where: { id: bookId } });
+            const penaltyDate = user.penalty_end_date;
+            const newPenaltyDate = new Date(penaltyDate);
+            
+            newPenaltyDate.setDate(newPenaltyDate.getDate() + 15);
 
             if (!user || !book) {
                 this.logger.warn(`User or book not found. UserId: ${userId}, BookId: ${bookId}`);
@@ -36,7 +41,7 @@ export class SchedulingService {
 
             await this.prisma.users.update({
                 where: { id: userId },
-                data: { score: user.score - 1 }
+                data: { score: user.score - 1, penalty_end_date: newPenaltyDate.toJSON() }
             });
 
             this.logger.log(`Email sent to ${user.email} regarding book ${book.title}`);
@@ -47,17 +52,23 @@ export class SchedulingService {
 
     private async updateStatus(statusData: SchedulingData) {
         try {
+            const user = await this.prisma.users.findUnique({ where: { id: statusData.userId } });
+            const nowDate = new Date();
+            const penalty = user.score > 20 ? 1 : 15; 
+        
+            nowDate.setDate(nowDate.getDate() + penalty);
+            
+            const penaltyDate = nowDate.toJSON();
+
             await this.prisma.reservations.update({
                 where: { id: statusData.id },
                 data: { status: "LATE" }
             });
 
-            const user = await this.prisma.users.findUnique({ where: { id: statusData.userId } });
-
             if (user) {
                 await this.prisma.users.update({
                     where: { id: statusData.userId },
-                    data: { score: user.score - 1 }
+                    data: { score: user.score - 1, penalty_end_date: penaltyDate }
                 });
                 this.logger.log(`Updated status to LATE and reduced score for UserId: ${statusData.userId}`);
             } else {
@@ -68,13 +79,43 @@ export class SchedulingService {
         }
     }
 
+    private async penaltyValidator(userList: SchedulingUser[]){
+        try {
+            const currentDate = new Date();
+
+            for(const data of userList){
+                let { penalty_end_date } = await this.prisma.users.findUnique({
+                    where: {
+                        id: data.userId
+                    }
+                });
+
+                let penaltyDate = new Date(penalty_end_date);
+
+                if(currentDate > penaltyDate) {
+                    await this.prisma.users.update({
+                        where: {
+                            id: data.userId
+                        },
+                        data: {
+                            penalty_end_date: null
+                        }
+                    })
+                }
+            }
+        } catch (error) {
+            this.logger.error(`Failed to update status for SchedulingData: Observer Penalty Users`, error.stack);
+        }
+    }
+
     @Cron(CronExpression.EVERY_DAY_AT_2AM, {
         name: 'handleCronJob',
     })
     async handleCron() {
         this.logger.log('Cron job started.');
         const bookIdList: SchedulingData[] = [];
-        
+        const userList: SchedulingUser[] = [];
+
         try {
             const reservations = await this.prisma.reservations.findMany({
                 where: {
@@ -90,6 +131,16 @@ export class SchedulingService {
                 }
             });
 
+            const reservationsReturned = await this.prisma.reservations.findMany({
+                where: {
+                    status: "RETURNED"
+                }
+            });
+
+            reservationsReturned.forEach((reservation)=>{
+                userList.push({ userId: reservation.user_id });
+            });
+
             reservations.forEach((reservation) => {
                 bookIdList.push({
                     id: reservation.id,
@@ -98,6 +149,8 @@ export class SchedulingService {
                     status: reservation.status
                 });
             });
+
+            await this.penaltyValidator(userList);
 
             if (bookIdList.length > 0) {
                 for (const data of bookIdList) {
