@@ -9,12 +9,16 @@ import { Role } from "../../common/enums/role.enum";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
 import { AuthorService } from "./author.service";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard)
 @Controller("authors")
 export class AuthorController {
     constructor(private readonly authorService: AuthorService) {}
 
+    @ApiOperation({ summary: "Criar um novo autor." })
+    @ApiBody({ type: CreateAuthorDTO, description: "Dados para registrar um novo autor." })
+    @ApiResponse({ status: 200, description: "Retorna um positivo e uma mensagem de sucesso." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Post()
@@ -28,6 +32,8 @@ export class AuthorController {
         }
     }
 
+    @ApiOperation({ summary: "Listar todos os autores registrados." })
+    @ApiResponse({ status: 200, description: "Retorna a lista de autores." })
     @Roles(Role.Admin, Role.User)
     @UseGuards(RoleGuard)
     @Get()
@@ -41,6 +47,9 @@ export class AuthorController {
         }
     }
 
+    @ApiOperation({ summary: "Buscar apenas um autor." })
+    @ApiParam({ name: "Id", description: "Id do autor." })
+    @ApiResponse({ status: 200, description: "Retorna as informações do autor." })
     @Roles(Role.Admin, Role.User)
     @UseGuards(RoleGuard)
     @Get(":id")
@@ -54,6 +63,10 @@ export class AuthorController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar todos os dados de um usuário." })
+    @ApiParam({ name: "Id", description: "Id do autor." })
+    @ApiBody({ type: UpdatePutAuthorDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Put(":id")
@@ -67,6 +80,10 @@ export class AuthorController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar os dados de um usuário parcialmente." })
+    @ApiParam({ name: "Id", description: "Id do autor." })
+    @ApiBody({ type: UpdatePatchAuthorDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Patch(":id")
@@ -80,6 +97,9 @@ export class AuthorController {
         }
     }
 
+    @ApiOperation({ summary: "Deletar o autor." })
+    @ApiParam({ name: "Id", description: "Id do autor." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Delete(":id")

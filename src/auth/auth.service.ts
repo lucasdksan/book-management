@@ -5,8 +5,8 @@ import * as bcrypt from "bcrypt";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomException } from "../common/exceptions/custom-exception.exception";
 import { AuthRegisterDTO } from "./dto/auth-register.dto";
-import { UserService } from "../modules/user/user.service";
 import { AuthUpdateDTO } from "./dto/auth-update.dto";
+import { UserService } from "../modules/user/user.service";
 
 
 @Injectable()

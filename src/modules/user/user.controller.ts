@@ -9,6 +9,7 @@ import { Role } from "../../common/enums/role.enum";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
 import { UserService } from "./user.service";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 
 @Roles(Role.Admin)
 @UseGuards(JwtAuthGuard, RoleGuard)
@@ -16,6 +17,9 @@ import { UserService } from "./user.service";
 export class UserController {
     constructor(private readonly userService: UserService){}
 
+    @ApiOperation({ summary: "Registrar um novo usuário." })
+    @ApiBody({ type: CreateUserDTO, description: "Dados para registrar o novo usuário." })
+    @ApiResponse({ status: 200, description: "Retorna um positivo e uma mensagem de sucesso." })
     @Post()
     async create(@Body() body: CreateUserDTO){
         try {
@@ -27,6 +31,8 @@ export class UserController {
         }
     }
 
+    @ApiOperation({ summary: "Listar todos os usuário registrados." })
+    @ApiResponse({ status: 200, description: "Retorna a lista de usuário." })
     @Get()
     async list(){
         try {
@@ -38,6 +44,9 @@ export class UserController {
         }
     }
 
+    @ApiOperation({ summary: "Buscar apenas um usuário." })
+    @ApiParam({ name: "Id", description: "Id do usuário." })
+    @ApiResponse({ status: 200, description: "Retorna as informações do usuário." })
     @Get(":id")
     async read(@ParamId() id:number){
         try {
@@ -49,6 +58,10 @@ export class UserController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar todos os dados do usuário." })
+    @ApiParam({ name: "Id", description: "Id do usuário." })
+    @ApiBody({ type: UpdatePutUserDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Put(":id")
     async update(@Body() body: UpdatePutUserDTO, @ParamId() id:number){
         try {
@@ -60,6 +73,10 @@ export class UserController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar os dados do usuário de forma parcial." })
+    @ApiParam({ name: "Id", description: "Id do usuário." })
+    @ApiBody({ type: UpdatePatchUserDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Patch(":id")
     async updatePartial(@Body() body: UpdatePatchUserDTO, @ParamId() id:number) {
         try {
@@ -71,6 +88,9 @@ export class UserController {
         }
     }
 
+    @ApiOperation({ summary: "Deletar um  usuário." })
+    @ApiParam({ name: "Id", description: "Id do usuário." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Delete(":id")
     async delete(@ParamId() id:number) {
         try {

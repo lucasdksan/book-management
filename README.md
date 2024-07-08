@@ -86,7 +86,7 @@ O CRUD deste sistema contém as seguintes entidades:
 
 ## End Points
 
-
+**Todas os end-points podem ser visualizadas usando o /api**
 
 ## Instalação
 

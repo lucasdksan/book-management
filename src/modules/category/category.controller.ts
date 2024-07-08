@@ -9,12 +9,16 @@ import { Role } from "../../common/enums/role.enum";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { RoleGuard } from "../../common/guards/role.guard";
 import { CategoryService } from "./category.service";
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 
 @UseGuards(JwtAuthGuard)
 @Controller("/categories")
 export class CategoryController {
     constructor(private readonly categoryService: CategoryService) { }
 
+    @ApiOperation({ summary: "Registrar uma nova categoria." })
+    @ApiBody({ type: CreateCategoryDTO, description: "Dados para registrar a novo categoria." })
+    @ApiResponse({ status: 200, description: "Retorna um positivo e uma mensagem de sucesso." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Post()
@@ -28,6 +32,8 @@ export class CategoryController {
         }
     }
 
+    @ApiOperation({ summary: "Listar todas as categorias registradas." })
+    @ApiResponse({ status: 200, description: "Retorna a lista de categorias." })
     @Roles(Role.Admin, Role.User)
     @UseGuards(RoleGuard)
     @Get()
@@ -41,6 +47,9 @@ export class CategoryController {
         }
     }
 
+    @ApiOperation({ summary: "Buscar apenas uma categoria." })
+    @ApiParam({ name: "Id", description: "Id da categoria." })
+    @ApiResponse({ status: 200, description: "Retorna as informações da categoria." })
     @Roles(Role.Admin, Role.User)
     @UseGuards(RoleGuard)
     @Get(":id")
@@ -54,6 +63,10 @@ export class CategoryController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar todos os dados da categoria." })
+    @ApiParam({ name: "Id", description: "Id da categoria." })
+    @ApiBody({ type: UpdatePutCategoryDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Put(":id")
@@ -67,6 +80,10 @@ export class CategoryController {
         }
     }
 
+    @ApiOperation({ summary: "Atualizar os dados de uma categoria de forma parcial." })
+    @ApiParam({ name: "Id", description: "Id da categoria." })
+    @ApiBody({ type: UpdatePatchCategoryDTO, description: "Dados que serão alterados." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Patch(":id")
@@ -80,6 +97,9 @@ export class CategoryController {
         }
     }
 
+    @ApiOperation({ summary: "Deletar a categoria." })
+    @ApiParam({ name: "Id", description: "Id da categoria." })
+    @ApiResponse({ status: 200, description: "Retorna mensagem positiva." })
     @Roles(Role.Admin)
     @UseGuards(RoleGuard)
     @Delete(":id")
