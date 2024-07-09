@@ -1,5 +1,6 @@
 export enum ReservationStatus{
     Reserved = "RESERVED",
     Returned = "RETURNED",
-    Late = "LATE"
+    Late = "LATE",
+    Pending = "PENDING"
 }

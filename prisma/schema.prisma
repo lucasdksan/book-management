@@ -87,6 +87,7 @@ enum ReservationStatus {
     RESERVED
     RETURNED
     LATE
+    PENDING
 }
 
 enum Role {
