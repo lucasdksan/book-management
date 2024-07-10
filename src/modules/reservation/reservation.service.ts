@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Injectable, Res } from "@nestjs/common";
 import { ReservationStatus as PrismaStatus } from "@prisma/client";
 import { CreateReservationDTO } from "./dto/create-reservation.dto";
 import { ViewReservationDTO } from "./dto/view-reservation.dto";
@@ -8,56 +8,63 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
 export class ReservationService {
-    constructor(private readonly prisma: PrismaService) { }
+    private readonly MAX_BOOKS_PER_USER = 3;
+    private readonly RESERVATION_PERIOD_DAYS = 15;
 
-    private async getBook(bookId: number){
-        const book = await this.prisma.books.findUnique({
-            where: { id: bookId }
-        });
+    constructor(private readonly prisma: PrismaService) {}
 
-        return book;
+    private async getBook(bookId: number) {
+        return this.prisma.books.findUnique({ where: { id: bookId } });
     }
 
     private async getUser(userId: number) {
-        const user = await this.prisma.users.findUnique({
-            where: { id: userId }
-        });
-
-        return user;
+        return this.prisma.users.findUnique({ where: { id: userId } });
     }
 
     private convertPrismaStatusToStatus(prismaStatus: PrismaStatus): ReservationStatus {
-        if(prismaStatus === "RESERVED") {
-            return ReservationStatus.Reserved;
-        } else if(prismaStatus === "RETURNED"){
-            return ReservationStatus.Returned;
-        } else {
-            return ReservationStatus.Late;
+        switch (prismaStatus) {
+            case "RESERVED":
+                return ReservationStatus.Reserved;
+            case "RETURNED":
+                return ReservationStatus.Returned;
+            case "LATE":
+                return ReservationStatus.Late
+            default:
+                return ReservationStatus.Pending;
         }
+    }
+
+    private throwCustomException(message: string, status: HttpStatus) {
+        throw new CustomException(false, message, status);
     }
 
     async create(data: CreateReservationDTO) {
         const { book_id, user_id } = data;
-        const nowDate = new Date();
-        
-        nowDate.setDate(nowDate.getDate() + 15);
-        
-        const dueDate = nowDate.toJSON();
-        const currentDate = new Date().toJSON();
 
-        if(!book_id || !user_id) throw new CustomException(false, "Livro ou Usuário não existe!", HttpStatus.UNPROCESSABLE_ENTITY);
+        if (!book_id || !user_id) {
+            this.throwCustomException("Livro ou Usuário não existe!", HttpStatus.UNPROCESSABLE_ENTITY);
+        }
 
-        const bookSelect = await this.getBook(book_id);
-        const quantity = bookSelect.quantity;
-        const quantityBooks = await this.prisma.reservations.findMany({
-            where: { user_id }
-        });
+        const book = await this.getBook(book_id);
         const user = await this.getUser(user_id);
-        const penaltyDate = new Date(user.penalty_end_date);
 
-        if(nowDate < penaltyDate) throw new CustomException(false, "O usuário não pode fazer reserva!", HttpStatus.BAD_REQUEST);
+        if (!book || !user) {
+            this.throwCustomException("Livro ou Usuário não encontrado!", HttpStatus.NOT_FOUND);
+        }
 
-        const quantityBook = await this.prisma.reservations.findMany({
+        const penaltyEndDate = new Date(user.penalty_end_date);
+        const now = new Date();
+
+        if (now < penaltyEndDate) {
+            this.throwCustomException("O usuário não pode fazer reserva!", HttpStatus.BAD_REQUEST);
+        }
+
+        const userReservations = await this.prisma.reservations.findMany({ where: { user_id } });
+        if (userReservations.length >= this.MAX_BOOKS_PER_USER) {
+            this.throwCustomException("O usuário atingiu o limite de livros!", HttpStatus.BAD_REQUEST);
+        }
+
+        const reservedBooksCount = await this.prisma.reservations.count({
             where: {
                 book_id,
                 AND: [
@@ -66,147 +73,46 @@ export class ReservationService {
             }
         });
 
-        if(quantityBooks.length === 3) throw new CustomException(false, "O usuário atingiu o limite de livros!", HttpStatus.BAD_REQUEST);
-        if(quantity === quantityBook.length) throw new CustomException(false, "O Livro em questão não está disponível!", HttpStatus.BAD_REQUEST);
+        if (reservedBooksCount >= book.quantity) {
+            this.throwCustomException("O Livro em questão não está disponível!", HttpStatus.BAD_REQUEST);
+        }
 
-        const reservationCreate = await this.prisma.reservations.create({
+        const reservation = await this.prisma.reservations.create({
             data: {
-                due_date: dueDate,
-                reservation_date: currentDate,
+                due_date: new Date(now.getTime() + this.RESERVATION_PERIOD_DAYS * 24 * 60 * 60 * 1000),
+                reservation_date: now,
                 book_id,
-                user_id
-            }
+                user_id,
+            },
         });
 
-        if(!reservationCreate) throw new CustomException(false, "Erro ao registrar o livro!", HttpStatus.BAD_REQUEST);
-        
+        if (!reservation) {
+            this.throwCustomException("Erro ao registrar o livro!", HttpStatus.BAD_REQUEST);
+        }
+
         return { success: true, message: "Livro registrado com sucesso!" };
     }
 
-    async list(){
+    async listUser(id: number) {
         const reservations = await this.prisma.reservations.findMany({
-            include: {
-                book: true,
-                user: true
-            }
+            where: { user_id: id },
+            include: { book: true },
         });
 
-        if(!reservations) throw new CustomException(false, "Erro ao registrar a reserva!", HttpStatus.BAD_REQUEST);
-        
-        const viewReservationsDTO = reservations.map((reservation, index)=> {
-            let viewReservationDTO: ViewReservationDTO = {
-                id: reservation.id,
-                status: this.convertPrismaStatusToStatus(reservation.status),
-                due_date: reservation.due_date.toJSON(),
-                reservation_date: reservation.reservation_date.toJSON(),
-                book: {
-                    id: reservation.book.id,
-                    title: reservation.book.title
-                },
-                user: {
-                    id: reservation.user.id,
-                    email: reservation.user.email,
-                    name: reservation.user.name
-                }
-            }
-
-            return viewReservationDTO;
-        });
-
-        return viewReservationsDTO;
-    }
-
-    async listUser(id: number){
-        const reservations = await this.prisma.reservations.findMany({
-            where: {
-                user_id: id
-            },
-            include: {
-                book: true
-            }
-        });
-
-        if(!reservations) throw new CustomException(false, "Erro ao listar as reservas do usuário!", HttpStatus.BAD_REQUEST);
-
-        const viewReservationsDTO = reservations.map((reservation)=> {
-            let viewReservationDTO: ViewReservationDTO = {
-                id: reservation.id,
-                status: this.convertPrismaStatusToStatus(reservation.status),
-                due_date: reservation.due_date.toJSON(),
-                reservation_date: reservation.reservation_date.toJSON(),
-                book: {
-                    id: reservation.book.id,
-                    title: reservation.book.title
-                },
-                user: null
-            }
-
-            return viewReservationDTO;
-        });
-
-        return viewReservationsDTO;
-    }
-
-    async listBook(id: number) {
-        const reservations = await this.prisma.reservations.findMany({
-            where: {
-                book_id: id
-            },
-            include: {
-                user: true
-            }
-        });
-
-        if(!reservations) throw new CustomException(false, "Erro ao listar os livros registrados!", HttpStatus.BAD_REQUEST);
-
-        const viewReservationsDTO = reservations.map((reservation)=> {
-            let viewReservationDTO: ViewReservationDTO = {
-                id: reservation.id,
-                status: this.convertPrismaStatusToStatus(reservation.status),
-                due_date: reservation.due_date.toJSON(),
-                reservation_date: reservation.reservation_date.toJSON(),
-                book: null,
-                user: {
-                    id: reservation.user.id,
-                    email: reservation.user.email,
-                    name: reservation.user.name
-                }
-            }
-
-            return viewReservationDTO;
-        });
-
-        return viewReservationsDTO;
-    }
-
-    async returnedBook(id: number, userId: number, bookId: number){
-        const result = await this.prisma.reservations.updateMany({
-            where: {
-                id,
-                user_id: userId,
-                book_id: bookId
-            },
-            data: {
-                status: "RETURNED"
-            }
-        });
-
-        const { penalty_end_date, score } = await this.getUser(userId);
-
-        if(!penalty_end_date) {
-            await this.prisma.users.update({
-                where: {
-                    id: userId
-                },
-                data: {
-                    score: score + 2,
-                    penalty_end_date: null
-                }
-            });
+        if (!reservations) {
+            this.throwCustomException("Erro ao listar as reservas do usuário!", HttpStatus.BAD_REQUEST);
         }
 
-        if(!result) throw new CustomException(false, "Erro ao trocar o status do livro!", HttpStatus.BAD_REQUEST);
-        
-        return { success: true, message: "Livro recebido!" };
+        return reservations.map(reservation => ({
+            id: reservation.id,
+            status: this.convertPrismaStatusToStatus(reservation.status),
+            due_date: reservation.due_date.toJSON(),
+            reservation_date: reservation.reservation_date.toJSON(),
+            book: {
+                id: reservation.book.id,
+                title: reservation.book.title,
+            },
+            user: null,
+        }));
     }
 }

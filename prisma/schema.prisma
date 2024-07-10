@@ -76,7 +76,7 @@ model Reservations {
     user_id          Int
     reservation_date DateTime
     due_date         DateTime
-    status           ReservationStatus @default(RESERVED)
+    status           ReservationStatus @default(PENDING)
     created_at       DateTime          @default(now())
     update_at        DateTime          @updatedAt
 
