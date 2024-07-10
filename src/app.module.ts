@@ -14,6 +14,7 @@ import { SchedulingService } from "./modules/scheduling/scheduling.service";
 import { AuthModule } from "./auth/auth.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { env } from "./common/environments/env.environment";
+import { SearchModule } from "./modules/search/search.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { env } from "./common/environments/env.environment";
     ReservationModule, 
     ScheduleModule.forRoot(),
     TransactionModule, 
+    SearchModule,
     forwardRef(() => UserModule), 
     forwardRef(() => AuthModule),
     MailerModule.forRoot({

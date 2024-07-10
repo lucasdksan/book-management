@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, HttpStatus, Post, Query, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Query, UseGuards } from "@nestjs/common";
 import { TransactionService } from "./transaction.service";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
 import { ParamId } from "../../common/decorators/param-id.decorator";
@@ -6,10 +6,11 @@ import { JwtAuthGuard } from "../../common/guards/jwt.guard";
 import { Roles } from "../../common/decorators/roles.decorator";
 import { Role } from "../../common/enums/role.enum";
 import { RoleGuard } from "../../common/guards/role.guard";
+import { CheckInDTO } from "./dto/check-in.dto";
 
-@UseGuards(JwtAuthGuard)
 @Roles(Role.Admin)
 @UseGuards(RoleGuard)
+@UseGuards(JwtAuthGuard)
 @Controller("transaction")
 export class TransactionController {
     constructor(private readonly transactionService: TransactionService) { }
@@ -26,9 +27,9 @@ export class TransactionController {
     }
 
     @Post("/check-in/:id")
-    async returnBook(@ParamId() id: number, @Query("userId") userId: string, @Query("bookId") bookId: string){
+    async returnBook(@ParamId() id: number, @Body() body: CheckInDTO){
         try {
-            const result = this.transactionService.returnBook(id, parseInt(userId), parseInt(bookId));
+            const result = this.transactionService.returnBook(id, body);
             return result;
         } catch (error) {
             if (error instanceof HttpException) throw error;

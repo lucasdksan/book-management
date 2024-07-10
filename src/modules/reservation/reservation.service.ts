@@ -1,7 +1,5 @@
 import { HttpStatus, Injectable, Res } from "@nestjs/common";
 import { ReservationStatus as PrismaStatus } from "@prisma/client";
-import { CreateReservationDTO } from "./dto/create-reservation.dto";
-import { ViewReservationDTO } from "./dto/view-reservation.dto";
 import { ReservationStatus } from "../../common/enums/reservation-status.enum";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
 import { PrismaService } from "../../prisma/prisma.service";
@@ -38,9 +36,7 @@ export class ReservationService {
         throw new CustomException(false, message, status);
     }
 
-    async create(data: CreateReservationDTO) {
-        const { book_id, user_id } = data;
-
+    async create(book_id: number, user_id: number) {
         if (!book_id || !user_id) {
             this.throwCustomException("Livro ou Usuário não existe!", HttpStatus.UNPROCESSABLE_ENTITY);
         }

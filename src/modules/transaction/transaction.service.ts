@@ -4,6 +4,7 @@ import { ReservationStatus as PrismaStatus } from "@prisma/client";
 import { CustomException } from "../../common/exceptions/custom-exception.exception";
 import { ReservationStatus } from "../../common/enums/reservation-status.enum";
 import { ViewTransactionDTO } from "./dto/view-transaction.dto";
+import { CheckInDTO } from "./dto/check-in.dto";
 
 @Injectable()
 export class TransactionService {
@@ -46,7 +47,8 @@ export class TransactionService {
         return { success: true, message: "Reserva autorizada!" };
     }
 
-    async returnBook(id: number, userId: number, bookId: number){
+    async returnBook(id: number, body: CheckInDTO){
+        const { bookId, userId } = body;
         const result = await this.prisma.reservations.updateMany({
             where: {
                 id,
