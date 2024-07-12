@@ -62,7 +62,7 @@ export class BookService {
 
         if(!updateBook) throw new CustomException(false, "Erro ao atualizar o Livro!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Livro atualizado!" }
+        return { success: true, message: "Livro atualizado!" };
     }
 
     async updatePatch(data: UpdatePatchBookDTO, id: number) {
@@ -73,7 +73,7 @@ export class BookService {
 
         if(!updateBook) throw new CustomException(false, "Erro ao atualizar o Livro!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Livro atualizado!" }
+        return { success: true, message: "Livro atualizado!" };
     }
 
     async delete(id: number){
@@ -83,6 +83,6 @@ export class BookService {
 
         if(!deleteBook) throw new CustomException(false, "Erro ao deletar o Livro!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Livro deletado!" }
+        return { success: true, message: "Livro deletado!" };
     }
 }

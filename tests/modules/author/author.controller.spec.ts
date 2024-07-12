@@ -56,7 +56,7 @@ describe("Author Controller", ()=>{
     });
 
     describe("Update", ()=>{
-        it("Atualizar os dados do usuário", async ()=> {
+        it("Atualizar os dados do autor", async ()=> {
             const result = {
                 success: true,
                 message: "Informações do autor atualizado!"
@@ -73,7 +73,7 @@ describe("Author Controller", ()=>{
     });
 
     describe("Update Partial", ()=>{
-        it("Atualizar os dados do usuário de forma parcial", async ()=> {
+        it("Atualizar os dados do autor de forma parcial", async ()=> {
             const result = {
                 success: true,
                 message: "Informações do autor atualizado!"

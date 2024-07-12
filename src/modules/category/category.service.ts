@@ -33,7 +33,7 @@ export class CategoryService {
 
         if(!categoryCreate) throw new CustomException(false, "Erro ao criar categoria!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Categoria criada com sucesso!" }
+        return { success: true, message: "Categoria criada com sucesso!" };
     }
 
     async list(){
@@ -62,7 +62,7 @@ export class CategoryService {
 
         if(!updateCategory) throw new CustomException(false, "Erro ao atualizar a categoria!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Categoria atualizada com sucesso!" }
+        return { success: true, message: "Categoria atualizada com sucesso!" };
     }
 
     async updatePatch(data: UpdatePatchCategoryDTO, id: number) {
@@ -73,7 +73,7 @@ export class CategoryService {
 
         if(!updateCategory) throw new CustomException(false, "Erro ao atualizar a categoria!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Categoria atualizada com sucesso!" }
+        return { success: true, message: "Categoria atualizada com sucesso!" };
     }
 
     async delete(id: number){
