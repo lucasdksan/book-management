@@ -83,6 +83,6 @@ export class CategoryService {
 
         if(!deleteCategory) throw new CustomException(false, "Erro ao deletar a categoria!", HttpStatus.BAD_REQUEST);
 
-        return { success: true, message: "Categoria deletada com sucesso!" }
+        return { success: true, message: "Categoria deletada com sucesso!" };
     }
 }
