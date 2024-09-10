@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `reservations` MODIFY `status` ENUM('RESERVED', 'RETURNED', 'LATE', 'PENDING') NOT NULL DEFAULT 'RESERVED';
