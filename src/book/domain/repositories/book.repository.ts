@@ -9,7 +9,7 @@ export namespace BookRepository {
     export class SearchResult extends DefaultSearchResult<BookEntity, Filter> {}
 
     export interface Repository extends SearchableRepositoryInterface<BookEntity, Filter, SearchParams, SearchResult> {
-        findByEmail(email: string): Promise<BookEntity>;
-        emailExists(email: string): Promise<void>;
+        findByTitle(title: string): Promise<BookEntity>;
+        bookExists(title: string): Promise<void>;
     }
 }

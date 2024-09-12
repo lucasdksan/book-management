@@ -22,7 +22,7 @@ export function BookDataBuilder(props: Props): BookProps {
         quantity: props.quantity ?? Math.floor(Math.random() * 101),
         publicationDate: props.publicationDate ?? new Date(),
         createdAt: props.createdAt ?? new Date(),
-        state: props.state ?? "",
+        state: props.state ?? "free",
         title: props.title ?? faker.commerce.productName(),
     }
 }
